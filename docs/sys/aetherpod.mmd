@@ -1,0 +1,45 @@
+# Created: 2026-07-25
+# Last Edited: 2026-07-25 17:28 CT (America/Chicago)
+# Path: docs/sys/aetherpod.mmd
+# Purpose: Mermaid flowchart for AetherPod architecture.
+
+```mermaid
+flowchart TD
+    CLI["aetherpod (CLI)"] -->|--data path| DM[DataManager]
+    CLI -->|tui| APP[AetherPod App]
+
+    subgraph TUI [Textual TUI]
+        APP -->|push| SPLASH[SplashScreen]
+        SPLASH -->|dismiss| FEED[FeedScreen]
+        FEED -->|Enter| EP[EpisodeScreen]
+        EP -->|d| DETAIL[EpisodeDetailScreen]
+        EP -->|/| SEARCH[SearchScreen]
+        EP -->|N| NOW[NowPlayingScreen]
+        EP -->|v| QUEUE[QueueScreen]
+        EP -->|?| HELP[HelpScreen]
+        APP -->|1s poll| EP
+        APP -->|1s poll| NOW
+    end
+
+    subgraph PLAYER [Audio Engine]
+        MPV[MpvPlayer] -->|subprocess| MPV_BIN[mpv]
+        MPV -->|IPC socket| CTL[Play/Pause/Seek/Speed]
+        MPV -->|stdout| PROG[Live Progress]
+        MPV -->|callback| DM
+        MPV -.->|downloads| CACHE[(~/.cache/aetherpod)]
+    end
+
+    subgraph DATA [Persistence]
+        DM --> STATE[(~/.local/state/aetherpod/state.json)]
+        DM --> LOG[(~/.local/state/aetherpod/log/aetherpod.log)]
+    end
+
+    subgraph NET [Network]
+        FETCH[fetch_feed_async] -->|aiohttp| RSS[RSS/Atom Feeds]
+        FETCH --> DM
+    end
+
+    FEED --> FETCH
+    APP --> PLAYER
+    EP --> PLAYER
+```

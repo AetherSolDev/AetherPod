@@ -1,0 +1,104 @@
+# Virtual environment
+venv/
+.venv/
+kiss/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Environment and secrets
+.env
+*.key
+*.jks
+*.keystore
+
+# App data files (runtime-generated in src/data/)
+src/data/*.db
+src/data/*.db-bak
+src/data/*.db.bak
+src/data/*.db-shm
+src/data/*.db-wal
+src/data/.master.key
+src/data/.app_settings.json
+.portable
+
+# Build output
+dist/
+build/
+app/build/
+app/release/
+app/debug/
+
+# Logs and temp
+logs/
+*.log
+tmp/
+crash.log
+journal.md
+
+# IDE and system files
+.idea/
+.vscode/
+.DS_Store
+
+# Generated artifacts
+*.egg-info/
+repomix-output.*
+.repomixignore
+AetherVault/
+
+# Docs/sys — only ship CHANGELOG, ARCHITECTURE, and the mmd
+docs/sys/BUGS.md
+docs/sys/COST.md
+docs/sys/KNOWLEDGE.md
+docs/sys/PLAN.md
+docs/sys/TASKS.md
+docs/sys/Model_Pricing_Reference.txt
+docs/sys/function_inventory.*
+docs/sys/dependency_report.*
+docs/sys/diagram.md
+docs/sys/FUTURE_DEV_IDEAS.md
+docs/sys/next.md
+docs/sys/podb_architecture_ascii.md
+docs/sys/podb_architecture_ascii.txt
+docs/sys/podb_architecture.mmd
+docs/sys/podb_flow.mmd
+docs/sys/podb.txt
+docs/sys/SESSION.md
+docs/sys/team_zero.md
+docs/sys/TX_PIA_REQUEST_TEMPLATE.md
+
+# Scripts/ Individual scripts for prooduction.
+scripts/
+instructions/
+AGENTS.md
+aetherlock.spec
+splash_preview.py
+
+# Stale root-level artifacts
+/ARCHITECTURE.md
+/BUGS.md
+/CHANGELOG.md
+/HELP.md
+/INSTALL.md
+/MERMAID.mmd
+/PLAN.md
+/TASKS.md
+/team_zero.md
+/next.md
+/diagram.md
+logo.txt
+docs/sys/podb.mmd
+docs/sys/AetherPod.mmd
+assets/AetherPod_logo.png
+palette*.png
+dependency_report.*
+function_inventory.*
+repomix-*
+.repomixignore
+data/log/

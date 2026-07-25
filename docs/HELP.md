@@ -1,0 +1,140 @@
+# Created: 2026-07-20
+# Last Edited: 2026-07-25 17:45 CT (America/Chicago)
+# Path: docs/HELP.md
+# Purpose: User guide and keybinding reference for AetherPod.
+
+# AetherPod — Help & Reference
+
+## Keybindings
+
+### Feed Screen (feed list)
+
+| Key       | Action            |
+|-----------|-------------------|
+| `a`       | Add a feed URL    |
+| `i`       | Import OPML file  |
+| `e`       | Export OPML file  |
+| `u`       | Refresh all feeds |
+| `r`       | Remove feed       |
+| `Enter`   | Browse episodes   |
+| `Space`   | Toggle pause/resume (global) |
+| `t`       | Toggle theme      |
+| `q`       | Quit AetherPod    |
+| `?`       | Show this help    |
+
+### Episode Screen (episode list)
+
+| Key              | Action                     |
+|------------------|----------------------------|
+| `Esc`            | Go back to feed list       |
+| `Enter`          | Play selected episode      |
+| `Space`          | Toggle pause/resume (global)|
+| `s`              | Stop playback              |
+| `d`              | Show episode details       |
+| `N`              | Now-playing full-screen    |
+| `m`              | Mark played/unplayed       |
+| `r`              | Restart from beginning     |
+| `u`              | Full refresh (no date limit)|
+| `f`              | Toggle unplayed-only filter|
+| `←` / `→`        | Seek -30s / +30s          |
+| `Ctrl+← / Ctrl+→`| Seek -1s / +1s            |
+| `[` / `]`        | Speed down / up (0.5x–3.0x)|
+| `.`              | Toggle scrub mode          |
+| `a`              | Add to play queue          |
+| `A`              | Play next (stop current)   |
+| `v`              | View play queue            |
+| `t`              | Toggle theme               |
+| `q`              | Quit AetherPod             |
+| `?`              | Show this help             |
+
+### Scrub Mode (active when `.` pressed during playback)
+
+| Key              | Action                     |
+|------------------|----------------------------|
+| `←` / `→`        | Seek by 5 seconds          |
+| `Ctrl+← / Ctrl+→`| Seek by 1 second           |
+| `Esc`            | Exit scrub mode            |
+| **Mouse click**  | Click timeline bar to seek |
+
+### Play Queue (press `v` on Episode Screen)
+
+| Key       | Action            |
+|-----------|-------------------|
+| `Enter`   | Play selected + remove from queue |
+| `d`       | Remove from queue |
+| `c`       | Clear queue       |
+| `Esc`     | Close queue view  |
+
+## Theme
+
+Press `t` at any screen to toggle between the dark theme (navy base, blue/teal accents)
+and the light theme (white background, dark text).
+
+## CLI Commands
+
+```bash
+aetherpod [command]
+```
+
+| Command   | Description                            |
+|-----------|----------------------------------------|
+| `tui`     | Launch the TUI (default)               |
+| `list`    | List subscribed feeds and episode counts|
+| `add <url>` | Subscribe to a new feed URL           |
+| `refresh` | Fetch all feeds and show episode titles|
+| `import <path>` | Import feeds from OPML file       |
+| `export <path>` | Export feeds to OPML file          |
+| `reset`   | Clear all state                        |
+| `--version` | Show version and exit                |
+| `--upgrade` | Upgrade to latest version            |
+| `--data <path>` | Use custom state file path         |
+| `--help`  | Show CLI usage                        |
+
+## State File
+
+AetherPod stores its state in `~/.local/state/aetherpod/state.json`. This file contains:
+
+- **feeds**: List of subscribed RSS/Atom feed URLs
+- **played_episodes**: History of played episodes (up to 50; oldest are trimmed)
+- **episode_progress**: Resume positions for partially-listened episodes
+- **feed_headers**: ETag/Last-Modified headers for conditional HTTP fetches
+- **feed_cache**: Cached feed metadata for instant startup
+- **refresh_days**: Configurable refresh window (default 100)
+- **version**: Schema version number (for automatic migration)
+
+Override state path with `--data /custom/path.json` (supports relative paths for USB portability).
+
+## OPML Import / Export
+
+- **Import**: `aetherpod import /path/to/subscriptions.opml`
+- **Export**: `aetherpod export /path/to/output.opml`
+- In-app: Press `i` (import) or `e` (export) on the Feed Screen
+
+OPML 1.0 and 2.0 formats are supported for import; export always produces OPML 2.0.
+
+## Smart Refresh
+
+- **Auto-refresh** (startup, feed add/remove): Only fetches episodes from the last N days (configurable via `state.json` → `refresh_days`, default 100).
+- **Full refresh** (`u` key on Episode Screen): Fetches all episodes from the feed, with no date limit.
+
+## Playback
+
+AetherPod uses **mpv** for audio playback. Controls flow through a Unix-socket IPC
+channel for low-latency communication:
+
+- Real-time progress bar updates via mpv's `--term-status-msg` output
+- Resume support: partially-listened episodes start from where you left off
+- Auto-download for resume: if an episode has saved progress, it is downloaded to `~/.cache/aetherpod/` before playing so `--start` works reliably on any CDN
+- Scrubbing: fine-grained seeking with visual timeline bar
+- Mouse scrubbing: click on the timeline bar to jump to any position
+- Speed control: `[` and `]` adjust playback speed from 0.5x to 3.0x in 0.25x steps
+- Play queue: add episodes with `a`, auto-plays next on natural end
+
+## Logs
+
+Logs are written to `~/.local/state/aetherpod/log/aetherpod.log`. Only WARNING+
+messages appear on stderr; INFO goes to the log file only.
+
+## Verify
+
+This is AetherPod **v0.2.0**. Run `aetherpod --version` to confirm.
