@@ -65,21 +65,28 @@ brew install mpv
 
 ### Install
 
+Choose one:
+
 ```bash
-# Clone
+# Option A — Interactive installer (recommended)
 git clone https://github.com/systemd/AetherPod.git
 cd AetherPod
+bash scripts/install.sh
 
-# Create virtual environment
+# Option B — Makefile (system-wide)
+make install
+
+# Option C — Makefile (user-local, no root)
+make install-user
+
+# Option D — Manual venv
 python -m venv venv
 source venv/bin/activate
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Install AetherPod (editable)
 pip install -e .
 ```
+
+`scripts/install.sh` walks you through system-wide, user-local, or venv installation.
 
 ### Run
 

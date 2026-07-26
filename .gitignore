@@ -74,7 +74,8 @@ docs/sys/team_zero.md
 docs/sys/TX_PIA_REQUEST_TEMPLATE.md
 
 # Scripts/ Individual scripts for prooduction.
-scripts/
+scripts/*
+!scripts/install.sh
 instructions/
 AGENTS.md
 aetherlock.spec
