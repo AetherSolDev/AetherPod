@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aetherpod"
-version = "0.2.0"
+version = "0.2.1"
 description = "Terminal podcast manager for Arch Linux"
 requires-python = ">=3.9"
 dependencies = [

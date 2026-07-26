@@ -1,9 +1,29 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-24 19:33 CT (America/Chicago)
+# Last Edited: 2026-07-26 11:16 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
 # Changelog
+
+## 2026-07-26 — v0.2.1 — Audio Engine Abstraction & GitHub Upgrade
+
+### Added
+- **AudioEngine abstraction** — `src/engines.py` with `AudioEngine` ABC and three concrete engines
+- **Version bumped to 0.2.1**
+- **`--upgrade` now pulls from GitHub** by default (`git+https://github.com/brandonmunoz1975-ops/AetherPod.git`) instead of PyPI
+- **Editable-mode `--upgrade` auto-runs `git pull`** — detects editable install, runs `git pull` in the project directory, then reinstalls with `pip install -e .`: `MpvEngine` (Unix-socket IPC), `VlcEngine` (RC-over-TCP), `FfplayEngine` (minimal stdin). Auto-detected in priority order: mpv > VLC > ffplay.
+- **VlcEngine** — `--intf rc` over `AF_INET` socket (works on Linux, macOS, and Windows). Supports play, stop, pause, seek, speed, and progress querying.
+- **FfplayEngine** — minimal fallback using stdin for pause toggle. No seek or speed control, but ensures playback works when mpv and VLC are both absent.
+- **detect_engine() factory** — checks PATH for each binary and returns the best available engine, or `None` if none found.
+
+### Changed
+- **MpvPlayer → Player** — `src/player.py` refactored from a monolithic mpv wrapper to an engine-agnostic `Player` class that delegates media operations to its `AudioEngine`. Queue, cache, and progress callback logic stay in `Player`.
+- **PlayerStatus moved to src/engines.py** — shared by all engines and the Player class.
+- **All screen type annotations updated** — `MpvPlayer` → `Player` in `FeedScreen`, `EpisodeScreen`, `NowPlayingScreen`, `QueueScreen`, `SearchScreen`, `EpisodeDetailScreen`, `SplashScreen`.
+
+### Windows / macOS Compatibility
+- **macOS**: Fully supported — `AF_UNIX` sockets work natively, mpv via Homebrew.
+- **Windows**: Supported via `VlcEngine` (VLC's RC interface uses TCP, not Unix sockets). MpvEngine remains Linux/macOS-only due to `AF_UNIX`. FfplayEngine provides a minimal fallback.
 
 ## 2026-07-25 — v0.2.0 Release Candidate — Splash, Queue, Polish
 

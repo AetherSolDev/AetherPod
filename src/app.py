@@ -13,7 +13,7 @@ from textual.binding import Binding
 from textual import events
 
 from src.engine import DataManager
-from src.player import MpvPlayer
+from src.player import Player
 from src.screens import EpisodeScreen, FeedScreen, NowPlayingScreen, QueueScreen, SplashScreen
 from src.theme import THEMES
 
@@ -259,7 +259,7 @@ class AetherPod(App):
     def __init__(self, data_path: str | Path | None = None) -> None:
         super().__init__()
         self._data = DataManager(data_path)
-        self._player = MpvPlayer()
+        self._player = Player()
 
     def on_mount(self) -> None:
         """Register themes, show splash screen, start playback polling."""

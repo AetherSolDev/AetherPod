@@ -31,7 +31,8 @@ from textual.widgets import (
 from rich.text import Text
 
 from src.engine import DataManager, Episode, FeedResult, ProgressInfo, fetch_feed_async
-from src.player import MpvPlayer, PlayerStatus
+from src.player import Player
+from src.engines import PlayerStatus
 from src.widgets import LoadingSpinner
 
 logger = logging.getLogger(__name__)
@@ -74,7 +75,7 @@ class FeedScreen(Screen):
         Binding("question_mark", "show_help", "Help", key_display="?"),
     ]
 
-    def __init__(self, data_manager: DataManager, player: MpvPlayer) -> None:
+    def __init__(self, data_manager: DataManager, player: Player) -> None:
         super().__init__()
         self._data = data_manager
         self._player = player
@@ -376,7 +377,7 @@ class EpisodeScreen(Screen):
         feed_result: FeedResult,
         feed_url: str | None,
         data_manager: DataManager,
-        player: MpvPlayer,
+        player: Player,
     ) -> None:
         super().__init__()
         self._feed = feed_result
@@ -861,7 +862,7 @@ class EpisodeScreen(Screen):
         full list repopulate.  Otherwise only refreshes the currently-playing
         episode's progress bar and the status bar position/duration text.
 
-        Falls back to :meth:`MpvPlayer.is_playing` + :meth:`MpvPlayer.get_live_progress`
+        Falls back to :meth:`Player.is_playing` + :meth:`Player.get_live_progress`
         when the IPC socket is not yet connected (startup transient).
         """
         was_paused = self._player_status is not None and self._player_status.is_paused
@@ -1378,7 +1379,7 @@ class NowPlayingScreen(Screen[None]):
         Binding("right_bracket", "speed_up", "Faster", key_display="]"),
     ]
 
-    def __init__(self, episode: Episode, data_manager: DataManager, player: MpvPlayer) -> None:
+    def __init__(self, episode: Episode, data_manager: DataManager, player: Player) -> None:
         super().__init__()
         self._ep = episode
         self._data = data_manager
@@ -1514,7 +1515,7 @@ class SearchScreen(Screen[None]):
         Binding("escape", "dismiss", "Close"),
     ]
 
-    def __init__(self, data_manager: DataManager, player: MpvPlayer) -> None:
+    def __init__(self, data_manager: DataManager, player: Player) -> None:
         super().__init__()
         self._data = data_manager
         self._player = player
@@ -1590,7 +1591,7 @@ class SearchScreen(Screen[None]):
                         return
 
     def _play_episode(self, episode: Episode) -> None:
-        """Play an episode via MpvPlayer."""
+        """Play an episode via Player."""
         if not episode.url:
             self.notify("No audio URL", severity="warning", timeout=3)
             return
@@ -1796,7 +1797,7 @@ class SplashScreen(Screen):
     ]
 
     def __init__(
-        self, data_manager: DataManager, player: MpvPlayer, n_feeds: int, n_played: int
+        self, data_manager: DataManager, player: Player, n_feeds: int, n_played: int
     ) -> None:
         super().__init__()
         self._data = data_manager
@@ -1841,7 +1842,7 @@ class QueueScreen(Screen):
         Binding("q", "quit", "Quit"),
     ]
 
-    def __init__(self, data_manager: DataManager, player: MpvPlayer) -> None:
+    def __init__(self, data_manager: DataManager, player: Player) -> None:
         super().__init__()
         self._data = data_manager
         self._player = player

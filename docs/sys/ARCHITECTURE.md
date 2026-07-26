@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-25 17:28 CT (America/Chicago)
+# Last Edited: 2026-07-26 11:16 CT (America/Chicago)
 # Path: docs/sys/ARCHITECTURE.md
 # Purpose: High-level component map and design rationale for AetherPod.
 
@@ -19,7 +19,8 @@ AetherPod/
 │   ├── app.py                  # AetherPod App — CSS, screens, 1s poll
 │   ├── cli.py                  # CLI logic (argparse, upgrade, logging)
 │   ├── engine.py               # DataManager + RSS fetch (sync + async)
-│   ├── player.py               # MpvPlayer + play queue + auto-download cache
+ │   ├── engines.py               # AudioEngine ABC + MpvEngine/VlcEngine/FfplayEngine
+ │   ├── player.py               # Player (engine-agnostic) + queue + auto-download cache
 │   ├── screens.py              # All screens (Feed, Episode, Queue, Splash, etc.)
 │   ├── splash.py               # Splash renderable
 │   ├── theme.py                # Dark/light Theme definitions
@@ -56,7 +57,12 @@ AetherPod/
 | **SplashRenderable** | `src/splash.py` | Rich renderable — ASCII logo + stats + features, theme colors |
 | **ThemeManager** | `src/theme.py` | Dark/light CSS variable maps |
 | **LoadingSpinner** | `src/widgets.py` | Braille spinner renderable |
-| **MpvPlayer** | `src/player.py` | Subprocess mpv, IPC control, play queue, auto-download cache, cleanup |
+ | **AudioEngine (ABC)** | `src/engines.py` | Abstract interface for media-player engines — play, stop, pause, seek, speed |
+| **MpvEngine** | `src/engines.py` | mpv subprocess with Unix-socket JSON IPC (full featured) |
+| **VlcEngine** | `src/engines.py` | VLC subprocess with RC TCP interface (full featured, cross-platform) |
+| **FfplayEngine** | `src/engines.py` | ffplay subprocess with stdin commands (minimal fallback) |
+| **detect_engine** | `src/engines.py` | Auto-detection factory — mpv > VLC > ffplay |
+| **Player** | `src/player.py` | Engine-agnostic wrapper — queue, cache, progress callbacks, thread management |
 
 ## state.json Schema
 
@@ -81,7 +87,10 @@ AetherPod/
 ```
 User Input → main.py → AetherPod → FeedScreen → DataManager (state.json)
                                     → fetch_feed_async (aiohttp/RSS)
-                                    → EpisodeScreen → MpvPlayer (mpv IPC)
+                                    → EpisodeScreen → Player → AudioEngine
+                                    │                          ├── MpvEngine (mpv IPC)
+                                    │                          ├── VlcEngine (VLC RC)
+                                    │                          └── FfplayEngine (stdin)
                                     → NowPlayingScreen (full-screen playback)
                                     → SearchScreen (cross-feed search)
                                     → EpisodeDetailScreen (detail popup)
@@ -141,6 +150,9 @@ state.json → DataManager.opml_export() → OPML file
 33. **NowPlayingScreen as a dedicated playback view** — Activated by `N` key. Shows a large progress bar, episode title, feed name, publication date, and transport controls (play/pause, stop, seek, speed). Pushes on top of the screen stack and pops back to EpisodeScreen on `Esc`.
 34. **SearchScreen for cross-feed search** — Activated by `/` key. Presents a text input at the top and a DataTable of matching episode titles across all cached feeds. Results update in real time as the user types. Selecting a result navigates to the source feed's EpisodeScreen.
 35. **EpisodeDetailScreen as a readable modal** — Activated by `d` key on a selected episode. Displays the full `summary`/description text in a scrollable `RichLog`, along with metadata (feed, date, duration, playback status). Dismissed with `Esc` or `q`.
+36. **AudioEngine abstract base class** — `src/engines.py` defines `AudioEngine` ABC with `MpvEngine`, `VlcEngine`, and `FfplayEngine` concretions. `detect_engine()` auto-selects the best available engine (mpv > VLC > ffplay) by checking PATH. The `Player` class is engine-agnostic, delegating all media operations to its engine. This design makes AetherPod cross-platform: mpv works on Linux/macOS, VLC works on Windows (via `--intf rc` TCP), and ffplay provides a minimal fallback anywhere.
+37. **VLC RC over TCP** — VLC's `--intf rc --rc-host=127.0.0.1:4212` starts a telnet-style remote-control interface on a local TCP port. Commands (`pause`, `seek`, `get_time`, `rate`) are sent as plain text over a `socket.AF_INET` connection, which works identically on Linux, macOS, and Windows (unlike `AF_UNIX`).
+38. **FfplayEngine as fallback** — ffplay has no IPC, so the engine uses stdin to send `p` (pause toggle). Seek and speed control are not available. The engine only provides `is_playing` status via process poll. This ensures AetherPod can always play audio even when mpv and VLC are absent.
 
 ## Logging Configuration
 

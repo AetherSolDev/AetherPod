@@ -19,6 +19,9 @@ from platformdirs import user_state_dir
 from src.engine import DataManager, fetch_feed
 from src import __version__
 
+_UPGRADE_URL = "git+https://github.com/brandonmunoz1975-ops/AetherPod.git"
+"""Default pip source for ``--upgrade``."""
+
 _SCRIPT_DIR = Path(__file__).resolve().parent.parent
 
 _LOG_DIR = Path(user_state_dir("aetherpod", ensure_exists=True)) / "log"
@@ -92,29 +95,40 @@ def cmd_export_opml(data: DataManager, path: str) -> None:
 
 
 def cmd_upgrade(url: str | None = None) -> None:
-    """Upgrade AetherPod to the latest version via pip."""
+    """Upgrade AetherPod to the latest version.
+
+    For editable installs, runs ``git pull`` in the project directory
+    and re-installs.  For non-editable installs, runs ``pip install --upgrade``
+    from the GitHub repo (or a custom *url*).
+    """
+    pip_source = url or _UPGRADE_URL
+
     try:
         dist = distribution("aetherpod")
         direct_url_str = dist.read_text("direct_url.json") if dist else None
     except (PackageNotFoundError, FileNotFoundError):
         direct_url_str = None
 
+    editable = False
     if direct_url_str:
         info = json.loads(direct_url_str)
         editable = info.get("dir_info", {}).get("editable", False)
-        source_url = info.get("url")
-    else:
-        editable = False
-        source_url = None
 
     if editable:
-        print(f"AetherPod {__version__} — installed in editable mode from:")
-        print(f"  {source_url or 'local path'}")
-        print("Run `git pull` in the project directory to update, then reinstall:")
-        print("  pip install -e .")
+        print(f"AetherPod {__version__} — installed in editable mode.")
+        print("Attempting git pull in the project directory...")
+        try:
+            subprocess.check_call(["git", "pull"], cwd=_SCRIPT_DIR)
+        except (subprocess.CalledProcessError, FileNotFoundError) as exc:
+            print(f"Git pull failed: {exc}", file=sys.stderr)
+            print("Manually: cd AetherPod && git pull && pip install -e .")
+            sys.exit(1)
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", "-e", str(_SCRIPT_DIR)]
+        )
+        print(f"Upgraded to AetherPod {__version__}")
         return
 
-    pip_source = url or "aetherpod"
     print(f"Upgrading AetherPod from {pip_source}...")
     try:
         subprocess.check_call(

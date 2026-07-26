@@ -3,5 +3,5 @@
 # Path: src/__init__.py
 # Purpose: Package marker for the AetherPod source package.
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 """Application version string.  Bumped when schema or features change."""

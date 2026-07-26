@@ -1,5 +1,5 @@
-# Created: 2026-07-25
-# Last Edited: 2026-07-25 17:28 CT (America/Chicago)
+# Created: 2026-07-26
+# Last Edited: 2026-07-26 11:07 CT (America/Chicago)
 # Path: docs/sys/aetherpod.mmd
 # Purpose: Mermaid flowchart for AetherPod architecture.
 
@@ -21,12 +21,26 @@ flowchart TD
         APP -->|1s poll| NOW
     end
 
-    subgraph PLAYER [Audio Engine]
-        MPV[MpvPlayer] -->|subprocess| MPV_BIN[mpv]
-        MPV -->|IPC socket| CTL[Play/Pause/Seek/Speed]
+    subgraph PLAYER [Player]
+        P[Player] -->|delegates to| ENG[AudioEngine]
+
+        ENG --> MPV[MpvEngine]
+        ENG --> VLC[VlcEngine]
+        ENG --> FF[FfplayEngine]
+
+        MPV -->|subprocess| MPV_BIN[mpv]
+        MPV -->|Unix socket IPC| CTL[Play/Pause/Seek/Speed]
         MPV -->|stdout| PROG[Live Progress]
-        MPV -->|callback| DM
-        MPV -.->|downloads| CACHE[(~/.cache/aetherpod)]
+
+        VLC -->|subprocess| VLC_BIN[VLC]
+        VLC -->|TCP RC port| VCTL[Play/Pause/Seek/Speed]
+
+        FF -->|subprocess| FF_BIN[ffplay]
+        FF -->|stdin| FCTL[Pause only]
+
+        MPV_BIN & VLC_BIN & FF_BIN -.->|OS PATH| DETECT[detect_engine]
+        P -->|callback| DM
+        P -.->|downloads| CACHE[(~/.cache/aetherpod)]
     end
 
     subgraph DATA [Persistence]
