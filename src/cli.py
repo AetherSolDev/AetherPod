@@ -1,5 +1,5 @@
 # Created: 2026-07-25
-# Last Edited: 2026-07-25 13:16 CT (America/Chicago)
+# Last Edited: 2026-07-26 11:16 CT (America/Chicago)
 # Path: src/cli.py
 # Purpose: CLI entry point logic — argparse, logging setup, headless commands, TUI launch.
 
@@ -94,6 +94,27 @@ def cmd_export_opml(data: DataManager, path: str) -> None:
     print(f"Exported {count} feed(s) to {path}")
 
 
+def _pip_cmd(subcmd: list[str]) -> list[str]:
+    """Build a pip command, adding ``--break-system-packages`` if outside a venv."""
+    cmd = [sys.executable, "-m", "pip"] + subcmd
+    if sys.prefix == sys.base_prefix:
+        cmd.append("--break-system-packages")
+    return cmd
+
+
+def _run_pip(cmd: list[str]) -> None:
+    """Run a pip command, capturing output for error reporting."""
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(result.stdout, end="")
+            print(result.stderr, end="", file=sys.stderr)
+            result.check_returncode()
+    except subprocess.CalledProcessError as exc:
+        print(f"pip command failed: {exc}", file=sys.stderr)
+        sys.exit(1)
+
+
 def cmd_upgrade(url: str | None = None) -> None:
     """Upgrade AetherPod to the latest version.
 
@@ -123,21 +144,15 @@ def cmd_upgrade(url: str | None = None) -> None:
             print(f"Git pull failed: {exc}", file=sys.stderr)
             print("Manually: cd AetherPod && git pull && pip install -e .")
             sys.exit(1)
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "-e", str(_SCRIPT_DIR)]
-        )
+        cmd = _pip_cmd(["install", "-e", str(_SCRIPT_DIR)])
+        _run_pip(cmd)
         print(f"Upgraded to AetherPod {__version__}")
         return
 
     print(f"Upgrading AetherPod from {pip_source}...")
-    try:
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "--upgrade", pip_source]
-        )
-        print("Upgrade complete.")
-    except subprocess.CalledProcessError as e:
-        print(f"Upgrade failed: {e}", file=sys.stderr)
-        sys.exit(1)
+    cmd = _pip_cmd(["install", "--upgrade", pip_source])
+    _run_pip(cmd)
+    print("Upgrade complete.")
 
 
 def main() -> None:

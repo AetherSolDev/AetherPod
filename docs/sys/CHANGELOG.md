@@ -11,7 +11,8 @@
 - **AudioEngine abstraction** — `src/engines.py` with `AudioEngine` ABC and three concrete engines
 - **Version bumped to 0.2.1**
 - **`--upgrade` now pulls from GitHub** by default (`git+https://github.com/brandonmunoz1975-ops/AetherPod.git`) instead of PyPI
-- **Editable-mode `--upgrade` auto-runs `git pull`** — detects editable install, runs `git pull` in the project directory, then reinstalls with `pip install -e .`: `MpvEngine` (Unix-socket IPC), `VlcEngine` (RC-over-TCP), `FfplayEngine` (minimal stdin). Auto-detected in priority order: mpv > VLC > ffplay.
+- **Editable-mode `--upgrade` auto-runs `git pull`** — detects editable install, runs `git pull` in the project directory, then reinstalls with `pip install -e .`
+- **`--upgrade` handles `--break-system-packages`** — auto-adds the flag when running outside a venv (Python 3.11+), fixing the macOS/Linux system-python case. Pip errors are now displayed to the user.: `MpvEngine` (Unix-socket IPC), `VlcEngine` (RC-over-TCP), `FfplayEngine` (minimal stdin). Auto-detected in priority order: mpv > VLC > ffplay.
 - **VlcEngine** — `--intf rc` over `AF_INET` socket (works on Linux, macOS, and Windows). Supports play, stop, pause, seek, speed, and progress querying.
 - **FfplayEngine** — minimal fallback using stdin for pause toggle. No seek or speed control, but ensures playback works when mpv and VLC are both absent.
 - **detect_engine() factory** — checks PATH for each binary and returns the best available engine, or `None` if none found.
