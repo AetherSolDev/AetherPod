@@ -1,5 +1,5 @@
 # Created: 2026-07-27
-# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Last Edited: 2026-07-27 16:49 CT (America/Chicago)
 # Path: docs/sys/AUDIT_REPORT.md
 # Purpose: Full audit report — findings, scoring, and prioritized remediation plan for AetherPod.
 
@@ -103,4 +103,26 @@ aetherpod/
 | 7.4 | No secrets committed | ✅ None tracked |
 | 7.6 | Package name unique | ✅ `aetherpod/` (not `src/`) |
 | 8.1-8.5 | All docs exist | ✅ CHANGELOG, PLAN, TASKS, ARCHITECTURE, BUGS, maps |
+
+---
+
+## Re-Audit: 2026-07-27 (Session 2) — Automated Tooling
+
+**Score**: **A** — all checks pass
+
+**Audit tools used**:
+- `function_inventory.py` — 150 functions, 24 classes, 23 files scanned
+- `find_dependencies.py` — 94 called / 56 uncalled (uncalled are Textual action handlers/overrides — expected)
+- `audit_dynamic.sh` — 6 `getattr` usages (all safe attribute lookups), no `eval`/`exec`, no bare `except:`
+
+| Finding | Description | Status |
+|---------|-------------|--------|
+| Re-audit clean | No regressions since prior fix cycle | ✅ |
+| 56 uncalled functions | All are Textual callback/action overrides — expected pattern, not dead code | ✅ Informational |
+| 6x getattr | `cli.py:35` (safe log level lookup), `feed_screen.py` (attribute access on ListItem), `queue.py` (attribute access on ListItem) | ✅ All safe |
+
+### Audit Artifacts Saved
+- `docs/sys/dynamic_audit_report.txt` — dynamic call pattern analysis
+- `docs/sys/function_inventory.txt` / `.json` — full function inventory
+- `docs/sys/dependency_report.txt` / `.json` — call dependency analysis
 

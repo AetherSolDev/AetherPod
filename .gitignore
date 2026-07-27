@@ -81,6 +81,9 @@ AGENTS.md
 aetherlock.spec
 splash_preview.py
 
+# Project initialization template
+New_Project_init/
+
 # Stale root-level artifacts
 /ARCHITECTURE.md
 /BUGS.md

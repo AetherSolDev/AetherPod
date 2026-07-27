@@ -1,9 +1,22 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Last Edited: 2026-07-27 16:49 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
 # Changelog
+
+## 2026-07-27 — v0.3.1 — Audit Re-run, New_Project_init removal, cache cleanup
+
+### Added
+- **Re-audit findings** — `docs/sys/AUDIT_REPORT.md` updated with automated tooling results (function inventory, dependency analysis, dynamic call audit)
+- **Audit artifacts** — `docs/sys/dynamic_audit_report.txt`
+
+### Changed
+- **`.gitignore`** — `New_Project_init/` added to gitignore
+- **`New_Project_init/`** — untracked from git (was a template/setup scaffold, not part of the app)
+
+### Removed
+- **Cache directories** — all `__pycache__/` and `.pytest_cache/` cleaned from local tree
 
 ## 2026-07-27 — v0.3.0 — Codebase Audit & Structural Overhaul
 
