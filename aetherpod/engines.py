@@ -1,6 +1,6 @@
 # Created: 2026-07-26
-# Last Edited: 2026-07-26 11:07 CT (America/Chicago)
-# Path: src/engines.py
+# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Path: aetherpod/engines.py
 # Purpose: Audio engine abstraction — MpvEngine, VlcEngine, FfplayEngine.
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 # Created: 2026-07-25
-# Last Edited: 2026-07-25 14:18 CT (America/Chicago)
-# Path: src/splash.py
+# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Path: aetherpod/splash.py
 # Purpose: Startup splash screen — ASCII logo, app stats, and features list.
 
 from __future__ import annotations
@@ -12,11 +12,11 @@ from rich.console import Console, ConsoleOptions, RenderResult
 from rich.table import Table
 from rich.text import Text
 
-from src import __version__
+from aetherpod import __version__
 
 logger = logging.getLogger(__name__)
 
-# Theme colors (from src/theme.py dark palette)
+# Theme colors (from aetherpod/theme.py dark palette)
 BG = "#1a1a2e"
 BLUE = "#A78BFA"
 ORANGE = "#FB923C"

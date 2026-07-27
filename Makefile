@@ -1,5 +1,5 @@
 # Created: 2026-07-26
-# Last Edited: 2026-07-26 11:07 CT (America/Chicago)
+# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
 # Path: Makefile
 # Purpose: Convenience targets for installing and managing AetherPod.
 
@@ -22,5 +22,5 @@ uninstall:
 	$(PIP) uninstall -y aetherpod
 
 clean:
-	rm -rf build/ dist/ *.egg-info/ src/*.egg-info/
+	rm -rf build/ dist/ *.egg-info/ aetherpod/*.egg-info/
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true

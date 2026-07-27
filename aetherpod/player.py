@@ -1,6 +1,6 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-26 11:07 CT (America/Chicago)
-# Path: src/player.py
+# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Path: aetherpod/player.py
 # Purpose: High-level Player wrapping an AudioEngine — queue, cache, progress callbacks.
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ from typing import Callable
 
 from platformdirs import user_cache_dir
 
-from src.engines import (
+from aetherpod.engines import (
     AudioEngine,
     MpvEngine,
     PlayerStatus,

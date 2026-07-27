@@ -1,5 +1,5 @@
 # Created: 2026-07-25
-# Last Edited: 2026-07-25 09:01 CT (America/Chicago)
+# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
 # Path: pyproject.toml
 # Purpose: Project metadata and entry point for pip-installable aetherpod command.
 
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-aetherpod = "src.cli:main"
+aetherpod = "aetherpod.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["src*"]
+include = ["aetherpod*"]

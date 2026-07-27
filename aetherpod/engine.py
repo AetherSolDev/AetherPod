@@ -1,68 +1,23 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-25 14:18 CT (America/Chicago)
-# Path: src/engine.py
-# Purpose: Core data engine — DataManager for state persistence and RSS feed fetching.
+# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Path: aetherpod/engine.py
+# Purpose: DataManager — state persistence for feeds, played episodes, and progress.
 
 from __future__ import annotations
 
-import asyncio
-import datetime
 import json
 import logging
-import os
 import threading
-import urllib.error
-import urllib.request
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass, field
-from email import utils as email_utils
 from pathlib import Path
 from typing import Any
 
 from platformdirs import user_state_dir
 
+from aetherpod.models import Episode, FeedResult, ProgressInfo
+from aetherpod.rss import REFRESH_DAYS
+
 logger = logging.getLogger(__name__)
-
-# ── constants ──────────────────────────────────────────────────────
-
-REFRESH_DAYS = 100
-"""Default number of days of episodes to show on auto-refresh.
-
-Automatic refreshes (startup, feed add/remove) only fetch episodes
-from the last *REFRESH_DAYS* to keep the list manageable.  A manual
-full refresh (``u`` key) omits this limit."""
-
-
-@dataclass
-class Episode:
-    """Represents a single podcast episode from an RSS feed."""
-
-    title: str
-    url: str
-    published: str | None = None
-    summary: str | None = None
-    duration: str | None = None
-    episode_id: str | None = None
-
-
-@dataclass
-class ProgressInfo:
-    """Playback progress for a partially-listened episode."""
-
-    position: float = 0.0
-    total_length: float = 0.0
-
-
-@dataclass
-class FeedResult:
-    """Result of fetching and parsing an RSS feed."""
-
-    title: str
-    episodes: list[Episode]
-    error: str | None = None
-    not_modified: bool = False
-    etag: str = ""
-    last_modified: str = ""
 
 
 class DataManager:
@@ -313,7 +268,10 @@ class DataManager:
             entry = self._progress.get(episode_id)
         if entry is None:
             return None
-        return ProgressInfo(position=entry.get("position", 0), total_length=entry.get("total_length", 0))
+        return ProgressInfo(
+            position=entry.get("position", 0),
+            total_length=entry.get("total_length", 0),
+        )
 
     # ── conditional fetch headers ────────────────────────────────────
 
@@ -468,225 +426,3 @@ class DataManager:
         return count
 
 
-# ── RSS fetching ───────────────────────────────────────────────────
-
-def fetch_feed(url: str, timeout: int = 15,
-              etag: str = "", last_modified: str = "") -> FeedResult:
-    """Parse an RSS/Atom feed and return structured episode data.
-
-    Fetches the feed with a *timeout* (seconds) using urllib, then
-    parses with feedparser. Pass *etag* and/or *last_modified* to
-    perform a conditional GET — if the server returns 304 (Not Modified),
-    ``FeedResult.not_modified`` is set to ``True`` and no parsing occurs.
-
-    Returns a FeedResult with episodes or an error description on failure.
-    """
-    import feedparser  # lazy import — optional dependency
-
-    # Fetch the feed data ourselves so we can set a timeout
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": "AetherPod/1.0"})
-        if etag:
-            req.add_header("If-None-Match", etag)
-        if last_modified:
-            req.add_header("If-Modified-Since", last_modified)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            raw = resp.read()
-            new_etag = resp.headers.get("ETag", "")
-            new_lm = resp.headers.get("Last-Modified", "")
-    except urllib.error.HTTPError as exc:
-        if exc.code == 304:
-            logger.debug("Feed unchanged (304): %s", url)
-            return FeedResult(title="", episodes=[], not_modified=True)
-        logger.error("HTTP %d for %s: %s", exc.code, url, exc.reason)
-        return FeedResult(title="", episodes=[], error=f"HTTP {exc.code}: {exc.reason}")
-    except urllib.error.URLError as exc:
-        logger.error("URL error for %s: %s", url, exc.reason)
-        return FeedResult(title="", episodes=[], error=str(exc.reason))
-    except TimeoutError:
-        logger.error("Timeout fetching %s (%ds)", url, timeout)
-        return FeedResult(title="", episodes=[], error=f"Timeout after {timeout}s")
-    except Exception as exc:
-        logger.error("Failed to fetch %s: %s", url, exc)
-        return FeedResult(title="", episodes=[], error=f"Failed to fetch: {exc}")
-
-    try:
-        parsed = feedparser.parse(raw)
-    except Exception as exc:
-        logger.error("feedparser crash for %s: %s", url, exc)
-        return FeedResult(title="", episodes=[], error=f"Failed to parse feed: {exc}")
-
-    if parsed.bozo and not parsed.entries:
-        # bozo exception with zero entries → treat as fatal
-        bozo_msg = _bozo_exception_message(parsed.bozo_exception)
-        logger.warning("Bozo feed (no entries) at %s: %s", url, bozo_msg)
-        return FeedResult(title="", episodes=[], error=bozo_msg)
-
-    feed_title = parsed.feed.get("title", url)
-    episodes: list[Episode] = []
-
-    for entry in parsed.entries:
-        episode_id = entry.get("id") or entry.get("link", "")
-        enclosure_url = _get_enclosure_url(entry) or ""
-
-        episodes.append(
-            Episode(
-                title=entry.get("title", "(no title)"),
-                url=enclosure_url or entry.get("link", ""),
-                published=entry.get("published") or entry.get("updated"),
-                summary=entry.get("summary"),
-                duration=entry.get("itunes_duration"),
-                episode_id=episode_id,
-            )
-        )
-
-    logger.debug("Fetched %d episodes from %s", len(episodes), feed_title)
-    return FeedResult(title=feed_title, episodes=episodes,
-                      etag=new_etag, last_modified=new_lm)
-
-
-def _get_enclosure_url(entry: Any) -> str | None:
-    """Extract the first audio enclosure URL from a feedparser entry."""
-    enclosures = entry.get("enclosures", [])
-    for enc in enclosures:
-        href = enc.get("href", "")
-        mime = (enc.get("type") or "").lower()
-        if href and ("audio" in mime or "video" in mime or not mime):
-            return href
-    return None
-
-
-def _bozo_exception_message(exception: Any) -> str:
-    """Return a human-readable message from a feedparser bozo_exception."""
-    if exception is None:
-        return "Unknown parsing error"
-    msg = str(exception)
-    # feedparser wraps some exceptions in its own types
-    if hasattr(exception, "getMessage"):
-        msg = exception.getMessage()
-    return msg or "Unknown parsing error"
-
-
-# ── async RSS fetching (aiohttp) ───────────────────────────────────
-
-async def fetch_feed_async(url: str, timeout: int = 15,
-                           etag: str = "", last_modified: str = "",
-                           days_back: int | None = None) -> FeedResult:
-    """Async version of :func:`fetch_feed` using ``aiohttp``.
-
-    Behaves identically to the sync version but does not block the
-    event loop.  Suitable for use directly with ``await`` in Textual
-    screens, avoiding ``asyncio.to_thread`` overhead.
-
-    If *days_back* is set (e.g. 100), only episodes published within
-    that many days are returned.  Pass ``None`` (default) for no limit.
-
-    Requires the ``aiohttp`` package (see ``requirements.txt``).
-    """
-    import aiohttp
-    import feedparser  # lazy import — optional dependency
-
-    headers = {"User-Agent": "AetherPod/1.0"}
-    if etag:
-        headers["If-None-Match"] = etag
-    if last_modified:
-        headers["If-Modified-Since"] = last_modified
-
-    new_etag = ""
-    new_lm = ""
-
-    try:
-        timeout_obj = aiohttp.ClientTimeout(total=timeout)
-        async with aiohttp.ClientSession(timeout=timeout_obj) as session:
-            async with session.get(url, headers=headers) as resp:
-                if resp.status == 304:
-                    logger.debug("Feed unchanged (304): %s", url)
-                    return FeedResult(title="", episodes=[], not_modified=True)
-                if resp.status >= 400:
-                    reason = resp.reason or f"HTTP {resp.status}"
-                    logger.error("HTTP %d for %s: %s", resp.status, url, reason)
-                    return FeedResult(title="", episodes=[], error=f"HTTP {resp.status}: {reason}")
-                raw = await resp.read()
-                new_etag = resp.headers.get("ETag", "")
-                new_lm = resp.headers.get("Last-Modified", "")
-    except asyncio.TimeoutError:
-        logger.error("Timeout fetching %s (%ds)", url, timeout)
-        return FeedResult(title="", episodes=[], error=f"Timeout after {timeout}s")
-    except aiohttp.ClientError as exc:
-        logger.error("HTTP client error for %s: %s", url, exc)
-        return FeedResult(title="", episodes=[], error=str(exc))
-    except Exception as exc:
-        logger.error("Failed to fetch %s: %s", url, exc)
-        return FeedResult(title="", episodes=[], error=f"Failed to fetch: {exc}")
-
-    try:
-        parsed = feedparser.parse(raw)
-    except Exception as exc:
-        logger.error("feedparser crash for %s: %s", url, exc)
-        return FeedResult(title="", episodes=[], error=f"Failed to parse feed: {exc}")
-
-    if parsed.bozo and not parsed.entries:
-        bozo_msg = _bozo_exception_message(parsed.bozo_exception)
-        logger.warning("Bozo feed (no entries) at %s: %s", url, bozo_msg)
-        return FeedResult(title="", episodes=[], error=bozo_msg)
-
-    feed_title = parsed.feed.get("title", url)
-    episodes: list[Episode] = []
-
-    for entry in parsed.entries:
-        episode_id = entry.get("id") or entry.get("link", "")
-        enclosure_url = _get_enclosure_url(entry) or ""
-
-        episodes.append(
-            Episode(
-                title=entry.get("title", "(no title)"),
-                url=enclosure_url or entry.get("link", ""),
-                published=entry.get("published") or entry.get("updated"),
-                summary=entry.get("summary"),
-                duration=entry.get("itunes_duration"),
-                episode_id=episode_id,
-            )
-        )
-
-    # Apply days_back filter (auto-refresh scoping)
-    if days_back is not None and days_back > 0:
-        cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days_back)
-        filtered: list[Episode] = []
-        for ep in episodes:
-            if ep.published:
-                pub_dt = _parse_feed_date(ep.published)
-                if pub_dt is not None and pub_dt >= cutoff:
-                    filtered.append(ep)
-                elif pub_dt is None:
-                    filtered.append(ep)
-            else:
-                filtered.append(ep)
-        episodes = filtered
-
-    logger.debug("Fetched %d episodes from %s (async)", len(episodes), feed_title)
-    return FeedResult(title=feed_title, episodes=episodes,
-                      etag=new_etag, last_modified=new_lm)
-
-
-def _parse_feed_date(raw: str) -> datetime.datetime | None:
-    """Parse a feed date string (ISO 8601 or RFC 2822) to a UTC-aware datetime.
-
-    Returns ``None`` if the string cannot be parsed.
-    """
-    raw = raw.strip()
-    parsed: datetime.datetime | None = None
-    # Try ISO 8601 first (Atom feeds)
-    try:
-        parsed = datetime.datetime.fromisoformat(raw.replace("Z", "+00:00"))
-    except (ValueError, TypeError):
-        pass
-    # Try RFC 2822 (RSS feeds)
-    if parsed is None:
-        try:
-            parsed = email_utils.parsedate_to_datetime(raw)
-        except (ValueError, TypeError, LookupError):
-            pass
-    # Ensure timezone-aware; assume UTC if naive
-    if parsed is not None and parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=datetime.timezone.utc)
-    return parsed

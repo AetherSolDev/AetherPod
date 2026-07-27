@@ -1,6 +1,6 @@
 # Created: 2026-07-25
-# Last Edited: 2026-07-26 11:16 CT (America/Chicago)
-# Path: src/cli.py
+# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Path: aetherpod/cli.py
 # Purpose: CLI entry point logic — argparse, logging setup, headless commands, TUI launch.
 
 from __future__ import annotations
@@ -16,8 +16,9 @@ from pathlib import Path
 
 from platformdirs import user_state_dir
 
-from src.engine import DataManager, fetch_feed
-from src import __version__
+from aetherpod.engine import DataManager
+from aetherpod.rss import fetch_feed
+from aetherpod import __version__
 
 _UPGRADE_URL = "git+https://github.com/brandonmunoz1975-ops/AetherPod.git"
 """Default pip source for ``--upgrade``."""
@@ -158,10 +159,13 @@ def cmd_upgrade(url: str | None = None) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(prog="aetherpod", description="Terminal podcast manager")
     default_data = str(_default_data_path())
-    parser.add_argument("--data", default=default_data, help="Path to state file (default: XDG state dir)")
+    parser.add_argument("--data", default=default_data,
+                        help="Path to state file (default: XDG state dir)")
     parser.add_argument("--version", action="store_true", help="Show version and exit")
-    parser.add_argument("--upgrade", action="store_true", help="Upgrade AetherPod to the latest version")
-    parser.add_argument("--upgrade-url", help="Custom pip-compatible URL for upgrade source (requires --upgrade)")
+    parser.add_argument("--upgrade", action="store_true",
+                        help="Upgrade AetherPod to the latest version")
+    parser.add_argument("--upgrade-url",
+                        help="Custom pip-compatible URL for upgrade source (requires --upgrade)")
 
     sub = parser.add_subparsers(dest="command")
     sub.add_parser("list", help="List subscribed feeds")
@@ -208,7 +212,7 @@ def main() -> None:
         data._path.unlink(missing_ok=True)
         data.load()
     else:
-        from src.app import AetherPod
+        from aetherpod.app import AetherPod
 
         app = AetherPod(data_path=data_path)
         app.run()

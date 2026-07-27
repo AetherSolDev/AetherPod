@@ -1,6 +1,6 @@
 # Created: 2026-07-24
-# Last Edited: 2026-07-24 17:01 CT (America/Chicago)
-# Path: src/widgets.py
+# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Path: aetherpod/widgets.py
 # Purpose: Reusable Textual widgets for AetherPod — spinner, progress, status bar.
 
 from __future__ import annotations

@@ -1,9 +1,31 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-26 11:16 CT (America/Chicago)
+# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
 # Changelog
+
+## 2026-07-27 — v0.3.0 — Codebase Audit & Structural Overhaul
+
+### Changed
+- **Package renamed `src/` → `aetherpod/`** — all imports updated from `from src.xxx` to `from aetherpod.xxx`. `pyproject.toml` and `Makefile` updated. Prevents namespace collisions with sibling projects.
+- **`screens.py` split into `aetherpod/screens/` package** — 1932-line monolithic file broken into 10 focused files: `feed_screen.py`, `episode_screen.py`, `dialogs.py`, `now_playing.py`, `search.py`, `detail_help.py`, `splash.py`, `queue.py`, `helpers.py`, `__init__.py`.
+- **`engine.py` split** — RSS fetching functions extracted to `aetherpod/rss.py`; shared dataclasses (`Episode`, `ProgressInfo`, `FeedResult`) extracted to `aetherpod/models.py`.
+- **`AGENTS.md`** — stale `/home/systemd/projects/podb/` paths updated to `AetherPod/`. Documentation references updated.
+- **`theme.py`** — `PODB_DARK`/`PODB_LIGHT` renamed to `AETHERPOD_DARK`/`AETHERPOD_LIGHT`.
+- **`app.py`** — `__import__('src')` hack replaced with explicit `from aetherpod import __version__`.
+- **CI/CD** — `.github/workflows/ci.yml` added (tests on push/PR for Python 3.10–3.13).
+
+### Added
+- **`maps/` directory** — `architecture.md` (directory tree + component responsibilities) and `imports.mmd` (Mermaid dependency graph).
+- **Test suite** — `tests/unit/test_engine.py` (14 tests for `DataManager`) and `tests/unit/test_rss.py` (12 tests for RSS helpers). All 26 tests pass.
+- **`docs/sys/KNOWLEDGE.md`** populated with Architecture TL;DR, Critical Files Map, Key Decisions, Gotchas, Code Patterns, Navigation Hints, Session History.
+- **`docs/sys/AUDIT_REPORT.md`** — full codebase audit report with findings, scoring, and remediation progress.
+
+### Fixed
+- **`_parse_feed_date(None)` crash** — added None guard. Caught by new test suite.
+- **Line length violations** — 20 lines exceeding 100 chars across 6 files shortened to PEP 8 compliance.
+- **File header timestamps** — refreshed across all edited files.
 
 ## 2026-07-26 — v0.2.1 — Audio Engine Abstraction & GitHub Upgrade
 

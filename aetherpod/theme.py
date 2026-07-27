@@ -1,6 +1,6 @@
 # Created: 2026-07-24
-# Last Edited: 2026-07-24 17:01 CT (America/Chicago)
-# Path: src/theme.py
+# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Path: aetherpod/theme.py
 # Purpose: Custom Textual themes — dark navy + blue/teal palette and light variant.
 
 from __future__ import annotations
@@ -8,7 +8,7 @@ from __future__ import annotations
 from textual.theme import Theme
 
 
-PODB_DARK = Theme(
+AETHERPOD_DARK = Theme(
     name="aetherpod-dark",
     primary="#54a0ff",
     secondary="#00d2d3",
@@ -30,7 +30,7 @@ PODB_DARK = Theme(
     },
 )
 
-PODB_LIGHT = Theme(
+AETHERPOD_LIGHT = Theme(
     name="aetherpod-light",
     primary="#54a0ff",
     secondary="#00d2d3",
@@ -53,6 +53,6 @@ PODB_LIGHT = Theme(
 )
 
 THEMES = {
-    "aetherpod-dark": PODB_DARK,
-    "aetherpod-light": PODB_LIGHT,
+    "aetherpod-dark": AETHERPOD_DARK,
+    "aetherpod-light": AETHERPOD_LIGHT,
 }
