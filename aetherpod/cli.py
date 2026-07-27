@@ -161,11 +161,11 @@ def main() -> None:
     default_data = str(_default_data_path())
     parser.add_argument("--data", default=default_data,
                         help="Path to state file (default: XDG state dir)")
-    parser.add_argument("-v", "--verbose", action="store_true",
+    parser.add_argument("-v", "--version", action="store_true", help="Show version and exit")
+    parser.add_argument("--verbose", action="store_true",
                         help="Verbose output (set log level to DEBUG)")
     parser.add_argument("--debug", action="store_true",
                         help="Alias for --verbose")
-    parser.add_argument("--version", action="store_true", help="Show version and exit")
     parser.add_argument("-u", "--upgrade", action="store_true",
                         help="Upgrade AetherPod to the latest version")
     parser.add_argument("--upgrade-url",

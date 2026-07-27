@@ -146,15 +146,15 @@ class FeedScreen(Screen):
             if cached is not None:
                 has_cache = True
                 total = len(cached.episodes)
-                                    played = sum(
-                        1 for e in cached.episodes
-                        if self._data.is_played(e.episode_id or "")
-                    )
+                played = sum(
+                    1 for e in cached.episodes
+                    if self._data.is_played(e.episode_id or "")
+                )
                 unplayed = total - played
                 prefix = "\u25b6 " if url == playing_feed_url else ""
-                                    label = Label(
-                        f"{prefix}{cached.title}  ({total} ep, {unplayed} new)"
-                    )
+                label = Label(
+                    f"{prefix}{cached.title}  ({total} ep, {unplayed} new)"
+                )
             else:
                 label = Label(f"  {url}  (waiting...)")
             item.compose_add_child(label)
@@ -214,7 +214,7 @@ class FeedScreen(Screen):
                 item._feed_result = cached
                 if cached:
                     total = len(cached.episodes)
-                                        played = sum(
+                    played = sum(
                         1 for e in cached.episodes
                         if self._data.is_played(e.episode_id or "")
                     )
