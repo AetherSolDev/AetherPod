@@ -1,7 +1,7 @@
 # Created: 2026-07-27
 # Last Edited: 2026-07-27 15:54 CT (America/Chicago)
 # Path: tests/unit/test_rss.py
-# Purpose: Unit tests for RSS fetch helper functions — date parsing, enclosure extraction, bozo messaging.
+# Purpose: Unit tests for RSS helpers — date parsing, enclosures, bozo messaging.
 
 from __future__ import annotations
 
