@@ -1,5 +1,5 @@
 # Created: 2026-07-27
-# Last Edited: 2026-07-27 15:54 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:12 CT (America/Chicago)
 # Path: maps/imports.mmd
 # Purpose: Module dependency graph for AetherPod.
 
@@ -55,6 +55,7 @@ flowchart TD
     H2 -->|"LoadingSpinner"| K
 
     G -->|"AudioEngine, MpvEngine, PlayerStatus, detect_engine"| L
+    G -->|"load_eq_presets"| O["aetherpod.eq_presets"]
 
     H4 -->|"PlayerStatus"| L
     H4 -->|"Episode"| J

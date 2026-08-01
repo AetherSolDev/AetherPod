@@ -1,5 +1,5 @@
 # Created: 2026-07-27
-# Last Edited: 2026-07-27 15:54 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:12 CT (America/Chicago)
 # Path: maps/architecture.md
 # Purpose: High-level directory structure and component responsibilities for AetherPod.
 
@@ -19,6 +19,7 @@ AetherPod/
 │   ├── rss.py                    # RSS/Atom feed fetching — fetch_feed, fetch_feed_async, helpers
 │   ├── engines.py                # AudioEngine ABC + MpvEngine/VlcEngine/FfplayEngine + factory
 │   ├── player.py                 # Player — queue, cache, progress callbacks, engine wrapper
+│   ├── eq_presets.py             # EQ preset definitions + user-editable eq.json loading
 │   ├── widgets.py                # LoadingSpinner reusable widget
 │   ├── splash.py                 # SplashRenderable — Rich startup screen
 │   ├── theme.py                  # Custom Textual dark/light themes
@@ -57,7 +58,7 @@ AetherPod/
 - `cli.py` imports `engine.py` (DataManager) and `rss.py` (fetch_feed) and lazy-imports `app.py`
 - `app.py` imports `engine.py`, `player.py`, `models.py`, individual screen modules, `theme.py`
 - `screens/` modules import `engine.py`, `models.py`, `rss.py`, `engines.py`, `player.py`, `widgets.py`
-- `player.py` imports `engines.py`
+- `player.py` imports `engines.py` and `eq_presets.py`
 - No circular imports — dependency graph is a DAG (one lazy import in queue.py)
 
 ## Component Responsibilities
