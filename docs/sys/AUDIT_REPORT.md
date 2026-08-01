@@ -1,5 +1,5 @@
 # Created: 2026-07-27
-# Last Edited: 2026-08-01 03:14 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:22 CT (America/Chicago)
 # Path: docs/sys/AUDIT_REPORT.md
 # Purpose: Full audit report — findings, scoring, and prioritized remediation plan for AetherPod.
 
@@ -7,8 +7,8 @@
 
 **Date**: 2026-08-01
 **Files Scanned**: 21 source, 6 scripts, 2 top-level, 7 untracked items
-**Overall Score**: **B** — regression from A: new EQ module untested, P0 hygiene finding, stale maps
-**Remediation**: P0 + P1 resolved in this session (F15–F19 fixed, F23 fixed); P2/P3 deferred
+**Overall Score**: **A** — all P0/P1/P2 findings resolved; history scrubbed; EQ module now tested
+**Remediation**: 2026-08-01 session 1 (F15–F19, F23), session 2 (F20–F22, F25–F26, F28 auto-fix, EQ tests)
 
 ## Remediation Progress
 
@@ -131,15 +131,16 @@ aetherpod/
 
 ## Full Audit: 2026-08-01 — Post-EQ-Feature, Linter-Assisted Re-Audit
 
-**Score**: **B** — 14 new findings (1 P0, 4 P1, 7 P2, 2 P3). Re-graded down from A:
-previously "clean" areas (unused imports, import grouping, silent `except: pass`)
-were verified with a real linter (ruff 0.16.1) and found to violate the checklist.
+**Score**: **A** — 14 findings (1 P0, 4 P1, 7 P2, 2 P3); **all P0–P2 resolved**. Re-graded
+down to B initially: previously "clean" areas (unused imports, import grouping, silent
+`except: pass`) were verified with a real linter (ruff 0.16.1) and found to violate the
+checklist. All resolved in this session; history scrubbed; EQ module test coverage added.
 
 ### Tooling Used
 - `scripts/function_inventory.py` — 164 functions, 24 classes, 21 files (excludes tests/scripts; includes `project_kit/scaffold.py` + `splash_preview.py`)
 - `scripts/find_dependencies.py` — regenerated fresh: **104 called / 60 uncalled** (uncalled = Textual action handlers / event overrides, expected)
-- `ruff check aetherpod/` — 69 findings (6 unused imports, 10 import-block sorting, 16 BLE001, 4 S110, rest style nits)
-- `pytest tests/` — **26 passed**
+- `ruff check aetherpod/` — 69 findings → **0 F401 / 0 I001 / 0 S110 / 0 UP024**; remaining = approved BLE001 (15, all at boundaries with logging) + RUF012 (Textual `BINDINGS` pattern) + P3 cosmetics (SIM/RUF046)
+- `pytest tests/` — **37 passed** (26 prior + 11 new EQ)
 - Static scans — no bare `except:`, no `eval`/`exec`, no trailing whitespace, no line > 100
 
 ### Findings
@@ -151,21 +152,28 @@ were verified with a real linter (ruff 0.16.1) and found to violate the checklis
 | F17 | Silent failures — 4x `try/except Exception: pass` (feed_screen 265/273, episode_screen 397/811) | P1 | ✅ Fixed |
 | F18 | Version drift — `__init__.py`=0.3.0, `pyproject.toml`=0.2.1, CHANGELOG/commit=v0.3.1 | P1 | ✅ Fixed |
 | F19 | EQ feature uncommitted: engines/player/screens modified + `eq_presets.py` untracked; no CHANGELOG entry, no tests | P1 | ✅ Fixed |
-| F20 | `except Exception`: 16 total — 15 pre-approved at boundaries, **1 new** in `eq_presets.py:100` | P2 | Open |
-| F21 | 6 unused imports (F401): app.py `QueueScreen`, engines.py `threading`/`field`/`Path`, models.py `field`/`Any`, splash.py `shutil`, episode_screen.py `PathInputDialog` | P2 | Open |
-| F22 | 10 unsorted import blocks (I001) — ruff disagrees with prior "2.1 ✅" | P2 | Open |
+| F20 | `except Exception`: 16 total — 15 pre-approved at boundaries, **1 new** in `eq_presets.py:100` | P2 | ✅ Fixed |
+| F21 | 6 unused imports (F401): app.py `QueueScreen`, engines.py `threading`/`field`/`Path`, models.py `field`/`Any`, splash.py `shutil`, episode_screen.py `PathInputDialog` | P2 | ✅ Fixed |
+| F22 | 10 unsorted import blocks (I001) — ruff disagrees with prior "2.1 ✅" | P2 | ✅ Fixed |
 | F23 | `player.py:91` unpacks `label` but never uses it (new EQ code) | P2 | ✅ Fixed |
-| F24 | Audit reports out of sync — dependency_report.json (150) vs inventory (164); regenerated to 164/104/60 during this audit | P2 | Fixed |
-| F25 | KNOWLEDGE.md stale: `aetherpod/screens.py` ref (now package), missing eq_presets.py, no EQ session entry | P2 | Open |
-| F26 | `docs/sys/dynamic_audit_report.txt` stale (Jul 27) + tracked; house_cleaning says regenerate fresh per audit | P2 | Open |
+| F24 | Audit reports out of sync — dependency_report.json (150) vs inventory (164); regenerated to 164/104/60 during this audit | P2 | ✅ Fixed |
+| F25 | KNOWLEDGE.md stale: `aetherpod/screens.py` ref (now package), missing eq_presets.py, no EQ session entry | P2 | ✅ Fixed |
+| F26 | `docs/sys/dynamic_audit_report.txt` stale (Jul 27) + tracked; house_cleaning says regenerate fresh per audit | P2 | ✅ Fixed |
 | F27 | `.gitignore` stale `src/data/*` entries; untracked `Tayogo.json` (EQ export), `uv.lock`, `safety.md` at root — decide commit/move/ignore | P3 | Open |
-| F28 | Ruff style nits: UP024 socket.error→OSError (4), SIM102 (4), RUF046 int casts (3), SIM114, SIM117, ASYNC251, PLW1510, RUF012 (mutable class attrs = Textual BINDINGS), F541, RUF022 | P3 | Open |
+| F28 | Ruff style nits: UP024 socket.error→OSError (4), SIM102 (4), RUF046 int casts (3), SIM114, SIM117, ASYNC251, PLW1510, RUF012 (mutable class attrs = Textual BINDINGS), F541, RUF022 | P3 | 🟡 Partial |
 
 ### Commits (2026-08-01 session)
-- `7b0d16a` chore: stop tracking data/state.json (F15)
-- `0bc90ee` feat: v0.4.0 — audio EQ presets (F19 + F18 + F23)
-- `a396159` docs: add eq_presets.py to architecture and imports maps (F16)
-- `6d31a50` fix: log instead of silently passing on widget-not-ready exceptions (F17)
+- `e3354d3` chore: stop tracking data/state.json (F15)
+- `96ec1e8` feat: v0.4.0 — audio EQ presets (F19 + F18 + F23)
+- `4d7f182` docs: add eq_presets.py to architecture and imports maps (F16)
+- `cf3cba6` fix: log instead of silently passing on widget-not-ready exceptions (F17)
+- `3402347` docs: mark F15-F19 fixed in audit report after remediation session
+- `7fac52a` fix: narrow eq.json load exception to OSError/ValueError/KeyError/TypeError (F20)
+- `a470886` style: remove 6 unused imports (F21)
+- `ce845ee` style: sort import blocks across 10 files (F22)
+- `5adbd26` chore: untrack dynamic_audit_report.txt, gitignore as generated artifact (F26)
+- `0050592` style: apply ruff auto-fixes — OSError alias collapse, combine ifs, sort __all__, drop empty f-string (F28)
+- `c979c74` test: add EQ preset unit tests — af-string building, eq.json load + fallback (11 tests)
 
 ### Map Health
 
@@ -175,9 +183,9 @@ were verified with a real linter (ruff 0.16.1) and found to violate the checklis
 | maps/imports.mmd | ✅ OK | Updated 2026-08-01 — player→eq_presets edge added |
 
 ### Healthy (no action)
-- Tests: 26/26 pass; core logic (DataManager, RSS) covered. EQ module has **no tests** (see F19)
-- No bare `except:`, no `eval`/`exec`, no trailing whitespace, no lines > 100
-- 6 `getattr` usages — all safe attribute lookups; 56→60 uncalled functions are Textual callbacks
+- Tests: 37/37 pass; core logic (DataManager, RSS, EQ presets) covered
+- No bare `except:`, no `eval`/`exec`, no trailing whitespace, no lines > 100, no unused imports, no silent `except: pass`
+- 6 `getattr` usages — all safe attribute lookups; 60 uncalled functions are Textual callbacks
 - Import graph is a DAG — no circular imports
 - All 21 source files have correct file headers
 
