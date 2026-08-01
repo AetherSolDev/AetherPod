@@ -17,7 +17,8 @@ __pycache__/
 *.jks
 *.keystore
 
-# App data files (runtime-generated in src/data/)
+# App data files (runtime-generated)
+data/state.json
 src/data/*.db
 src/data/*.db-bak
 src/data/*.db.bak
