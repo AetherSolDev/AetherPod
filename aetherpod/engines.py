@@ -1,5 +1,5 @@
 # Created: 2026-07-26
-# Last Edited: 2026-08-01 03:20 CT (America/Chicago)
+# Last Edited: 2026-08-01 12:26 CT (America/Chicago)
 # Path: aetherpod/engines.py
 # Purpose: Audio engine abstraction — MpvEngine, VlcEngine, FfplayEngine.
 
@@ -12,6 +12,7 @@ import re
 import shutil
 import socket
 import subprocess
+import sys
 import tempfile
 import time
 from abc import ABC, abstractmethod
@@ -19,6 +20,128 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 logger = logging.getLogger(__name__)
+
+# ── Binary discovery ──────────────────────────────────────────────────
+
+_WINDOWS_INSTALL_DIRS: dict[str, list[tuple[str, ...]]] = {
+    # exe name → relative paths under Program Files / Program Files (x86) / LOCALAPPDATA
+    "vlc.exe": [
+        ("VideoLAN", "VLC", "vlc.exe"),
+    ],
+    "mpv.exe": [
+        ("mpv", "mpv.exe"),
+    ],
+    "ffplay.exe": [
+        ("ffmpeg", "bin", "ffplay.exe"),
+    ],
+}
+
+
+def _find_windows_install_dir(exe: str) -> str | None:
+    """Search common Windows install locations for *exe* (not on PATH by default).
+
+    VLC, mpv, and ffmpeg are typically installed under ``Program Files``
+    without being added to PATH, so ``shutil.which`` misses them.
+    """
+    if os.name != "nt":
+        return None
+    rel_paths = _WINDOWS_INSTALL_DIRS.get(exe.lower())
+    if not rel_paths:
+        return None
+    roots = []
+    for var in ("ProgramFiles", "ProgramFiles(x86)", "LOCALAPPDATA"):
+        val = os.environ.get(var)
+        if val:
+            roots.append(val)
+    user = os.environ.get("USERPROFILE", "")
+    for root in roots:
+        for rel in rel_paths:
+            candidate = os.path.join(root, *rel)
+            if os.path.isfile(candidate):
+                return candidate
+    if user:
+        for rel in rel_paths:
+            candidate = os.path.join(user, "scoop", "apps", rel[-2], "current", rel[-1])
+            if os.path.isfile(candidate):
+                return candidate
+    return None
+
+
+_MACOS_INSTALL_PATHS: dict[str, list[tuple[str, ...]]] = {
+    # binary name → candidate absolute paths (relative to home dir)
+    "vlc": [
+        ("Applications", "VLC.app", "Contents", "MacOS", "vlc"),
+        ("Applications", "VLC.app", "Contents", "MacOS", "VLC"),
+    ],
+    "mpv": [
+        ("opt", "homebrew", "bin", "mpv"),       # Apple Silicon
+        ("usr", "local", "bin", "mpv"),          # Intel / older Homebrew
+    ],
+    "ffplay": [
+        ("opt", "homebrew", "bin", "ffplay"),
+        ("usr", "local", "bin", "ffplay"),
+    ],
+}
+
+
+def _find_macos_install_dir(name: str) -> str | None:
+    """Search common macOS install locations for *name* (not on PATH by default).
+
+    VLC.app is a bundle under ``/Applications`` and is never on PATH; Homebrew
+    (``/opt/homebrew`` on Apple Silicon, ``/usr/local`` on Intel) may also be
+    missing from PATH in non-interactive shells.
+    """
+    if os.name != "posix" or sys.platform != "darwin":
+        return None
+    for rel in _MACOS_INSTALL_PATHS.get(name, ()):
+        candidate = os.path.join(os.sep, *rel)
+        if os.path.isfile(candidate):
+            return candidate
+    home = os.path.expanduser("~")
+    for rel in _MACOS_INSTALL_PATHS.get(name, ()):
+        candidate = os.path.join(home, *rel)
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+
+
+def _find_binary(name: str) -> str | None:
+    """Locate an executable by PATH, then by common platform install dirs.
+
+    On Windows, VLC/ffmpeg live under ``Program Files``; on macOS, VLC.app and
+    Homebrew may not be on PATH.  ``shutil.which`` alone misses all of these.
+    """
+    found = shutil.which(name)
+    if found:
+        return found
+    exe = name if name.lower().endswith(".exe") else name + ".exe"
+    win = _find_windows_install_dir(exe)
+    if win:
+        return win
+    return _find_macos_install_dir(name)
+
+
+def _vlc_registry_path() -> str | None:
+    """Return VLC's install path from the Windows registry, if present."""
+    if os.name != "nt":
+        return None
+    try:
+        import winreg  # Windows only
+    except ImportError:
+        return None
+    for hive, key_path in (
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\VideoLAN\VLC"),
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\VideoLAN\VLC"),
+        (winreg.HKEY_CURRENT_USER, r"SOFTWARE\VideoLAN\VLC"),
+    ):
+        try:
+            with winreg.OpenKey(hive, key_path) as key:
+                install_dir, _ = winreg.QueryValueEx(key, "InstallDir")
+            if install_dir and os.path.isfile(os.path.join(install_dir, "vlc.exe")):
+                return os.path.join(install_dir, "vlc.exe")
+        except (OSError, TypeError):
+            continue
+    return None
 
 
 @dataclass
@@ -103,7 +226,11 @@ class AudioEngine(ABC):
 
 
 class MpvEngine(AudioEngine):
-    """Engine wrapping an mpv subprocess with Unix-socket JSON IPC."""
+    """Engine wrapping an mpv subprocess with Unix-socket JSON IPC.
+
+    IPC is AF_UNIX (Linux/macOS only); on Windows the mpv engine is
+    skipped in favor of VLC (AF_INET), which works on all platforms.
+    """
 
     BINARY: ClassVar[str] = "mpv"
     SPEEDS: ClassVar[list[float]] = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0]
@@ -126,7 +253,9 @@ class MpvEngine(AudioEngine):
 
     @classmethod
     def available(cls) -> bool:
-        return shutil.which(cls.BINARY) is not None
+        if os.name == "nt":
+            return False  # AF_UNIX IPC unsupported on Windows → use VLC
+        return _find_binary(cls.BINARY) is not None
 
     def play(self, url: str, start_pos: float | None = None) -> str | None:
         self.stop()
@@ -137,8 +266,9 @@ class MpvEngine(AudioEngine):
             logger.error("Failed to create IPC socket dir: %s", exc)
             return f"Failed to create IPC socket: {exc}"
 
+        binary = _find_binary(self.BINARY) or self.BINARY
         cmd = [
-            self.BINARY,
+            binary,
             "--no-video",
             "--audio-display=no",
             f"--input-ipc-server={self._socket_path}",
@@ -386,16 +516,13 @@ class VlcEngine(AudioEngine):
 
     @classmethod
     def available(cls) -> bool:
-        binary = cls.BINARY
-        if os.name == "nt":
-            binary = "vlc.exe"
-        return shutil.which(binary) is not None
+        if _find_binary(cls.BINARY) is not None:
+            return True
+        return _vlc_registry_path() is not None
 
     def play(self, url: str, start_pos: float | None = None) -> str | None:
         self.stop()
-        binary = self.BINARY
-        if os.name == "nt":
-            binary = "vlc.exe"
+        binary = _find_binary(self.BINARY) or self.BINARY
         cmd = [
             binary,
             "--intf", "rc",
@@ -581,16 +708,11 @@ class FfplayEngine(AudioEngine):
 
     @classmethod
     def available(cls) -> bool:
-        binary = cls.BINARY
-        if os.name == "nt":
-            binary = "ffplay.exe"
-        return shutil.which(binary) is not None
+        return _find_binary(cls.BINARY) is not None
 
     def play(self, url: str, start_pos: float | None = None) -> str | None:
         self.stop()
-        binary = self.BINARY
-        if os.name == "nt":
-            binary = "ffplay.exe"
+        binary = _find_binary(self.BINARY) or self.BINARY
         cmd = [
             binary,
             "-nodisp",

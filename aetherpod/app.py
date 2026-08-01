@@ -1,10 +1,11 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
+# Last Edited: 2026-08-01 12:08 CT (America/Chicago)
 # Path: aetherpod/app.py
 # Purpose: Main Textual TUI application — screen orchestration, CSS, playback polling.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from pathlib import Path
 
@@ -20,6 +21,7 @@ from aetherpod.screens.feed_screen import FeedScreen
 from aetherpod.screens.now_playing import NowPlayingScreen
 from aetherpod.screens.splash import SplashScreen
 from aetherpod.theme import THEMES
+from aetherpod.updater import UpdateCheck, check_for_update
 
 logger = logging.getLogger(__name__)
 
@@ -298,6 +300,14 @@ class AetherPod(App):
         logger.info("AetherPod starting — %d feed(s) loaded", n_feeds)
         self.push_screen(SplashScreen(self._data, self._player, n_feeds, n_played))
         self.set_interval(1, self._poll_playback)
+        asyncio.create_task(self._check_updates())
+
+    async def _check_updates(self) -> None:
+        """Background update check — notify the user if a newer version exists."""
+        result: UpdateCheck = await check_for_update()
+        if result.available:
+            self.notify(result.message, severity="information", timeout=8)
+            logger.info("Update available: %s", result.latest)
 
     def on_unmount(self) -> None:
         """Kill mpv when the app exits and clean temp downloads."""

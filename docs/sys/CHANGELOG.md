@@ -1,21 +1,27 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
+# Last Edited: 2026-08-01 12:29 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
 # Changelog
 
-## 2026-08-01 — v0.4.3 — Feed List UX: Sort, Filter, Zebra Striping
+## 2026-08-01 — v0.4.3 — Feed Sort/Filter, Zebra Striping, Auto Update Check
+
+### Fixed
+- **Windows: "No audio engine found" despite mpv/VLC installed** — engine detection only checked PATH, but VLC installs to `C:\Program Files\VideoLAN\VLC\vlc.exe` without touching PATH. Added `_find_binary()` (PATH + common Windows install dirs) and `_vlc_registry_path()` (Windows registry). mpv is now correctly skipped on Windows (its AF_UNIX IPC is Linux/macOS-only), so VLC (AF_INET, all platforms) is selected. 11 new engine-discovery tests. (`aetherpod/engines.py`, `tests/unit/test_engines.py`)
+- **macOS: VLC.app not detected** — VLC is a `.app` bundle (`/Applications/VLC.app/Contents/MacOS/vlc`) never on PATH; Homebrew may also be off PATH in non-interactive shells. Added `_find_macos_install_dir()` for VLC.app + `/opt/homebrew`/`/usr/local`. macOS keeps mpv-first (AF_UNIX works), falling back to VLC.app. (`aetherpod/engines.py`, `tests/unit/test_engines.py`)
+- **Documented EQ limitation on Windows** — Windows uses VLC (mpv's control channel is Linux/macOS-only), so the `1`–`4` EQ presets are unavailable there. README + docs/HELP.md note this; mpv-on-Windows is a roadmap item.
 
 ### Added
+- **Automatic update check** — on TUI startup, AetherPod queries the GitHub releases API in the background and notifies the user when a newer version is available (silent offline, non-blocking, 5s timeout). Advises `aetherpod -u`. (`aetherpod/updater.py`)
 - **Feed list alphabetical sort** (`s` key) — cycles `subscribe order → A→Z → Z→A` on the FeedScreen. Sorts by cached feed title (falls back to URL before cache is populated).
 - **Feed list filter** (`f` key) — inline `Input` filters feeds by name as you type; `Esc` or `f` closes and clears; `Enter` submits. Empty-match state shows "No feeds match" with a clear hint.
 - **Zebra striping** — alternating row backgrounds on the feed list (`ListView > ListItem.zebra` via `$panel`) and on DataTables (episode list + search results) via native `zebra_stripes` + `datatable--odd-row`/`--even-row` CSS.
-
+- **13 new unit tests** for `updater.py` version comparison (suite now 67 including 17 engine-discovery tests).
 ### Changed
 - **HelpScreen (Feed)** — `s` (sort) and `f` (filter) documented.
 - **`aetherpod/screens/feed_screen.py`** — new `_display_order()` (filter + sort) shared by both render paths, `_feed_title_for()` sort key, `Input` widget in compose, `on_key` Escape handling for filter.
-- **`aetherpod/app.py`** — CSS for `#feed-filter`, `ListItem.zebra`, and DataTable zebra rows.
+- **`aetherpod/app.py`** — CSS for `#feed-filter`, `ListItem.zebra`, and DataTable zebra rows; `on_mount` schedules the background update check.
 
 ## 2026-08-01 — v0.4.2 — macOS Intel Builds & Public Downloads
 

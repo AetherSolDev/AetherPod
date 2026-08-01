@@ -50,7 +50,8 @@
 - **Dark / light theme** toggle
 - **Async feed refresh** — instant cache on startup, background updates
 - **Splash screen** — branded startup with subscription stats
-- **Audio EQ presets** — 3 voice-optimized EQ profiles (Bright / Warm / Balanced) with lookahead limiter — toggle instantly with `1`–`4` *(mpv only)*
+- **Audio EQ presets** — 3 voice-optimized EQ profiles (Bright / Warm / Balanced) with lookahead limiter — toggle instantly with `1`–`4`. **mpv only**: EQ requires mpv's lavfi audio filter bridge, so it works on Linux/macOS (mpv) but is unavailable on Windows (which uses VLC).
+- **Automatic update check** — on startup, notifies you when a newer version is available (`aetherpod -u` to upgrade)
 
 ---
 
@@ -77,7 +78,19 @@ No Python or pip needed. Grab the binary for your platform from the
 ### Prerequisites
 
 - Python 3.14+
-- [mpv](https://mpv.io/) — audio player
+- [mpv](https://mpv.io/) (Linux/macOS) or [VLC](https://www.videolan.org/vlc/) (Windows, or any platform) — audio player
+
+> **Windows:** VLC is detected automatically even when not on PATH (installed
+> under `Program Files` or the registry). AetherPod uses VLC on Windows since
+> mpv's control channel is Linux/macOS-only.
+>
+> **macOS:** VLC.app and Homebrew are detected even when not on PATH
+> (`/Applications/VLC.app/Contents/MacOS/vlc`, `/opt/homebrew`, `/usr/local`).
+> mpv is preferred when present.
+>
+> **EQ on Windows:** the audio EQ presets (`1`–`4`) require mpv and are
+> therefore **not available on Windows** (VLC is used there). mpv-on-Windows
+> support is on the roadmap.
 
 ```bash
 # Install mpv (Arch)
@@ -128,6 +141,18 @@ aetherpod list     # List subscribed feeds
 ## Notes
 
 - **Resume playback** — AetherPod saves your position and resumes when you press Enter on a partially-played episode. This works reliably for local files. For streaming URLs, resume depends on whether the podcast host's CDN supports HTTP range requests (`--start`). If the episode restarts from the beginning, the CDN is rejecting the seek — this is a host limitation, not a bug. Downloading the episode would allow reliable resume.
+
+## Updating
+
+AetherPod checks GitHub for a newer version on startup and shows a notification
+when one is available.
+
+```bash
+aetherpod -u    # Upgrade to the latest version
+```
+
+- **Editable / pip installs** — `-u` pulls the update straight from git (no release build needed).
+- **Executable installs** — download the new binary from the [Releases](https://github.com/AetherSolDev/AetherPod/releases) page (`-u` requires pip/git and will not work inside a bundled executable).
 
 ## Usage
 

@@ -1,5 +1,5 @@
 # Created: 2026-07-20
-# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
+# Last Edited: 2026-08-01 12:29 CT (America/Chicago)
 # Path: docs/HELP.md
 # Purpose: User guide and keybinding reference for AetherPod.
 
@@ -77,6 +77,17 @@ and the light theme (white background, dark text).
 Feed and episode lists use zebra striping (alternating row shades) to make
 scanning easier. Rows with a `▷` prefix are currently playing.
 
+## Updating
+
+On startup, AetherPod checks GitHub for a newer release. If one exists, a
+notification appears (e.g. *"Update available: v0.4.3 (you have v0.4.2). Quit
+and run 'aetherpod -u' to upgrade."*). The check is silent if offline.
+
+- `aetherpod -u` upgrades editable / pip installs straight from git.
+- Executable (bundled binary) installs must download the new binary from the
+  [Releases](https://github.com/AetherSolDev/AetherPod/releases) page — `-u`
+  requires pip/git and does not work inside a bundled executable.
+
 ## Filtering Feeds
 
 - **Sort** (`s`) — cycles through *subscribe order → A→Z → Z→A* by feed title.
@@ -132,7 +143,25 @@ OPML 1.0 and 2.0 formats are supported for import; export always produces OPML 2
 
 ## Playback
 
-AetherPod uses **mpv** for audio playback. Controls flow through a Unix-socket IPC
+AetherPod auto-detects the best available audio engine:
+
+**Engine detection by platform:**
+- **Linux / macOS**: mpv (preferred) → VLC → ffplay
+- **Windows**: VLC (preferred — mpv's control channel is Unix-socket only and
+  unsupported on Windows) → ffplay
+
+**Detection beyond PATH:** AetherPod finds engines even when they aren't on PATH:
+- **Windows** — standard `Program Files` install locations and the registry
+  (`SOFTWARE\VideoLAN\VLC` → `InstallDir`)
+- **macOS** — VLC.app bundle (`/Applications/VLC.app/Contents/MacOS/vlc`) and
+  Homebrew (`/opt/homebrew` on Apple Silicon, `/usr/local` on Intel)
+
+If you still see *"No audio engine found"*, ensure the player is installed
+or add its folder to PATH.
+
+### mpv (Linux/macOS)
+
+Controls flow through a Unix-socket IPC
 channel for low-latency communication:
 
 - Real-time progress bar updates via mpv's `--term-status-msg` output
@@ -161,6 +190,11 @@ a compressed *loudness* feel while preventing peaks from clipping.
 
 **mpv only** — EQ requires mpv's lavfi bridge and is silently ignored when
 using VLC or ffplay as the audio engine.
+
+**Windows users:** because AetherPod uses VLC on Windows (mpv's control
+channel is Linux/macOS-only), the EQ presets are **not available on Windows**.
+The `1`–`4` keys still work but have no effect. mpv-on-Windows support (which
+would enable EQ) is on the roadmap.
 
 ### Customizing presets
 

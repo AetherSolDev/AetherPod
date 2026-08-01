@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
+# Last Edited: 2026-08-01 12:09 CT (America/Chicago)
 # Path: docs/sys/ARCHITECTURE.md
 # Purpose: High-level component map and design rationale for AetherPod.
 
@@ -27,6 +27,7 @@ AetherPod/
 │   ├── rss.py                    # RSS/Atom feed fetching (sync + async)
 │   ├── engines.py                # AudioEngine ABC + MpvEngine/VlcEngine/FfplayEngine
 │   ├── player.py                 # Player (engine-agnostic) + queue + auto-download cache
+│   ├── updater.py                # UpdateChecker — GitHub releases API, version compare
 │   ├── splash.py                 # SplashRenderable
 │   ├── theme.py                  # Dark/light Theme definitions
 │   ├── widgets.py                # LoadingSpinner
@@ -79,3 +80,4 @@ User Input → Screen → Player/DataManager → AudioEngine (mpv/VLC/ffplay)
 | mpv > VLC > ffplay auto-detect | Best-effort audio — mpv preferred, ffplay as last resort |
 | List zebra striping | Feed list via `ListItem.zebra` class (Textual has no `:nth-child`); DataTables via native `zebra_stripes` |
 | Feed sort/filter | `s` cycles subscribe→A-Z→Z-A by cached title; `f` inline name filter (`_display_order()` shared by both render paths) |
+| Auto update check | `updater.py` hits the public GitHub releases API on startup; silent offline (5s timeout, non-blocking), notifies only when newer |
