@@ -1,9 +1,19 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 03:48 CT (America/Chicago)
+# Last Edited: 2026-08-01 04:07 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
 # Changelog
+
+## 2026-08-01 — v0.4.2 — macOS Intel Builds & Public Downloads
+
+### Added
+- **macOS Intel (x86_64) executable** — new `macos-15-intel` runner produces `aetherpod-macos-x86_64` alongside `aetherpod-macos-arm64` (Apple Silicon). Releases now ship 4 assets: Windows, Linux, macOS arm64, macOS x86_64.
+- **README download table** — direct links to every platform binary via `releases/latest/download/...`; build status badge in the header.
+
+### Changed
+- **CI actions bumped** to current majors (`actions/checkout`/`setup-python`/`upload-artifact` v7, `softprops/action-gh-release` v3) — resolves Node 20 deprecation warnings.
+- **Fixed release asset collision** — each platform now builds a uniquely named binary so Linux/macOS no longer overwrite each other in the release.
 
 ## 2026-08-01 — v0.4.1 — Audit Remediation, Cross-Platform Builds, AetherSolDev Rebrand
 
