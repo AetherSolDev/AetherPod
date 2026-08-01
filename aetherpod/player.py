@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Last Edited: 2026-07-28 17:13 CT (America/Chicago)
 # Path: aetherpod/player.py
 # Purpose: High-level Player wrapping an AudioEngine — queue, cache, progress callbacks.
 
@@ -7,10 +7,11 @@ from __future__ import annotations
 
 import logging
 import threading
+import time
 from pathlib import Path
 from typing import Callable
 
-from platformdirs import user_cache_dir
+from platformdirs import user_cache_dir, user_config_dir
 
 from aetherpod.engines import (
     AudioEngine,
@@ -18,6 +19,7 @@ from aetherpod.engines import (
     PlayerStatus,
     detect_engine,
 )
+from aetherpod.eq_presets import load_eq_presets
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +53,8 @@ class Player:
         self._progress_callback: ProgressCallback | None = None
         self._cache_dir = Path(user_cache_dir("aetherpod", ensure_exists=True))
         self._temp_files: list[Path] = []
+        self._eq_preset: int = 0
+        self._eq_presets = load_eq_presets(user_config_dir("aetherpod", ensure_exists=True))
 
         # Play queue: (url, episode_id, title) tuples
         self._queue: list[tuple[str, str, str]] = []
@@ -81,6 +85,12 @@ class Player:
         err = self._engine.play(url, start_pos)
         if err:
             return err
+
+        # Re-apply EQ preset to the new mpv process
+        if self._eq_preset != 0:
+            _, af_string = self._eq_presets[self._eq_preset]
+            time.sleep(0.3)
+            self._engine.set_eq(af_string)
 
         # Spawn wait loop in a daemon thread
         threading.Thread(
@@ -149,6 +159,21 @@ class Player:
     def get_live_progress(self) -> tuple[float, float]:
         """Return the latest (position, duration) from the engine."""
         return self._engine.get_live_progress()
+
+    # ── eq presets ────────────────────────────────────────────────────
+
+    def set_eq_preset(self, n: int) -> None:
+        """Switch EQ preset by index."""
+        n = max(0, min(n, len(self._eq_presets) - 1))
+        self._eq_preset = n
+        label, af_string = self._eq_presets[n]
+        self._engine.set_eq(af_string)
+        logger.info("EQ preset: %s", label)
+
+    def get_eq_preset(self) -> tuple[int, str]:
+        """Return (index, label) of current EQ preset."""
+        label = self._eq_presets[self._eq_preset][0]
+        return self._eq_preset, label
 
     # ── speed control ─────────────────────────────────────────────────
 
@@ -239,7 +264,6 @@ class Player:
                 last_len = live_len
             # Sleep between polling cycles
             try:
-                import time
                 time.sleep(0.5)
             except KeyboardInterrupt:
                 break

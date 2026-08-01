@@ -1,5 +1,5 @@
 # Created: 2026-07-26
-# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Last Edited: 2026-07-28 16:49 CT (America/Chicago)
 # Path: aetherpod/engines.py
 # Purpose: Audio engine abstraction — MpvEngine, VlcEngine, FfplayEngine.
 
@@ -91,6 +91,10 @@ class AudioEngine(ABC):
     @abstractmethod
     def wait_for_exit(self, timeout: float | None = None) -> int | None:
         """Wait for process to exit and return returncode, or None if not started."""
+
+    @abstractmethod
+    def set_eq(self, af_string: str) -> None:
+        """Set active audio filter chain (lavfi + native). Empty string clears filters."""
 
     @abstractmethod
     def cleanup(self) -> None:
@@ -244,6 +248,13 @@ class MpvEngine(AudioEngine):
         self._cleanup_socket()
         return rc
 
+    def set_eq(self, af_string: str) -> None:
+        for attempt in range(5):
+            resp = self._ipc_command({"command": ["set_property", "af", af_string]})
+            if resp is not None:
+                break
+            time.sleep(0.2)
+
     def cleanup(self) -> None:
         self._close_ipc()
         self._cleanup_socket()
@@ -276,8 +287,15 @@ class MpvEngine(AudioEngine):
             self._sock.sendall(payload.encode("utf-8"))
             raw = self._sock.recv(4096)
             if raw:
-                return json.loads(raw.decode("utf-8").strip())
-        except (OSError, socket.error, json.JSONDecodeError) as exc:
+                text = raw.decode("utf-8").strip()
+                for line in text.split("\n"):
+                    line = line.strip()
+                    if line:
+                        try:
+                            return json.loads(line)
+                        except json.JSONDecodeError:
+                            continue
+        except (OSError, socket.error) as exc:
             logger.debug("IPC command failed: %s", exc)
             self._sock = None
         return None
@@ -492,6 +510,9 @@ class VlcEngine(AudioEngine):
         self._close_rc()
         return rc
 
+    def set_eq(self, af_string: str) -> None:
+        pass  # VLC does not support lavfi-style audio filter chains
+
     def cleanup(self) -> None:
         self._close_rc()
 
@@ -665,6 +686,9 @@ class FfplayEngine(AudioEngine):
         rc = proc.returncode
         self._proc = None
         return rc
+
+    def set_eq(self, af_string: str) -> None:
+        pass  # ffplay does not support runtime af changes
 
     def cleanup(self) -> None:
         pass

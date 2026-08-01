@@ -1,5 +1,5 @@
 # Created: 2026-07-27
-# Last Edited: 2026-07-27 15:54 CT (America/Chicago)
+# Last Edited: 2026-07-28 16:41 CT (America/Chicago)
 # Path: aetherpod/screens/now_playing.py
 # Purpose: Full-screen now-playing view with big progress bar, metadata, controls.
 
@@ -29,6 +29,10 @@ class NowPlayingScreen(Screen[None]):
         Binding("right", "seek_forward", "+30s"),
         Binding("left_bracket", "speed_down", "Slower", key_display="["),
         Binding("right_bracket", "speed_up", "Faster", key_display="]"),
+        Binding("1", "eq_off", "EQ:Off", key_display="1"),
+        Binding("2", "eq_bright", "EQ:Bright", key_display="2"),
+        Binding("3", "eq_warm", "EQ:Warm", key_display="3"),
+        Binding("4", "eq_balanced", "EQ:Balanced", key_display="4"),
     ]
 
     def __init__(self, episode: Episode, data_manager: DataManager, player: Player) -> None:
@@ -94,8 +98,11 @@ class NowPlayingScreen(Screen[None]):
             self.query_one("#np-progress", Static).update("  Waiting for mpv...")
             self.query_one("#np-time", Static).update("")
 
+        _, eq_label = self._player.get_eq_preset()
+        eq_display = f"  EQ:{eq_label}" if eq_label != "Off" else ""
         controls = Text(
-            "  [Space] Pause  [s] Stop  [\u2190] [\u2192] Seek  [[ ]] Speed  [Esc] Close",
+            f"  [Space] Pause  [s] Stop  [\u2190] [\u2192] Seek"
+            f"  [[ ]] Speed  [1-4] EQ{eq_display}  [Esc] Close",
             style="dim",
         )
         self.query_one("#np-controls", Static).update(controls)
@@ -145,6 +152,22 @@ class NowPlayingScreen(Screen[None]):
         idx = speeds.index(cur) if cur in speeds else 2
         new = speeds[idx + 1] if idx < len(speeds) - 1 else speeds[-1]
         self._player.set_speed(new)
+        self._refresh()
+
+    def action_eq_off(self) -> None:
+        self._player.set_eq_preset(0)
+        self._refresh()
+
+    def action_eq_bright(self) -> None:
+        self._player.set_eq_preset(1)
+        self._refresh()
+
+    def action_eq_warm(self) -> None:
+        self._player.set_eq_preset(2)
+        self._refresh()
+
+    def action_eq_balanced(self) -> None:
+        self._player.set_eq_preset(3)
         self._refresh()
 
     def action_dismiss(self) -> None:

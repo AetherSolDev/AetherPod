@@ -42,6 +42,7 @@
 - **Dark / light theme** toggle
 - **Async feed refresh** — instant cache on startup, background updates
 - **Splash screen** — branded startup with subscription stats
+- **Audio EQ presets** — 3 voice-optimized EQ profiles (Bright / Warm / Balanced) with lookahead limiter — toggle instantly with `1`–`4` *(mpv only)*
 
 ---
 
@@ -112,6 +113,7 @@ aetherpod list     # List subscribed feeds
 | `s` | Stop |
 | `[` / `]` | Speed down / up |
 | `←` / `→` | Seek -30s / +30s |
+| `1` / `2` / `3` / `4` | EQ presets: Off / Bright / Warm / Balanced *(mpv only)* |
 | `f` | Toggle unplayed filter |
 | `a` | Add to play queue |
 | `v` | View play queue |
@@ -129,6 +131,7 @@ aetherpod list     # List subscribed feeds
 | Data | Location |
 |------|----------|
 | State | `~/.local/state/aetherpod/state.json` |
+| EQ presets (user-editable) | `~/.config/aetherpod/eq.json` |
 | Logs | `~/.local/state/aetherpod/log/aetherpod.log` |
 
 Override state path with `--data /custom/path.json` (supports relative paths for USB portability).

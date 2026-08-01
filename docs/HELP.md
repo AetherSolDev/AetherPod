@@ -1,5 +1,5 @@
 # Created: 2026-07-20
-# Last Edited: 2026-07-25 17:45 CT (America/Chicago)
+# Last Edited: 2026-07-28 17:18 CT (America/Chicago)
 # Path: docs/HELP.md
 # Purpose: User guide and keybinding reference for AetherPod.
 
@@ -39,6 +39,7 @@
 | `←` / `→`        | Seek -30s / +30s          |
 | `Ctrl+← / Ctrl+→`| Seek -1s / +1s            |
 | `[` / `]`        | Speed down / up (0.5x–3.0x)|
+| `1` / `2` / `3` / `4` | EQ presets: Off / Bright / Warm / Balanced |
 | `.`              | Toggle scrub mode          |
 | `a`              | Add to play queue          |
 | `A`              | Play next (stop current)   |
@@ -129,6 +130,60 @@ channel for low-latency communication:
 - Mouse scrubbing: click on the timeline bar to jump to any position
 - Speed control: `[` and `]` adjust playback speed from 0.5x to 3.0x in 0.25x steps
 - Play queue: add episodes with `a`, auto-plays next on natural end
+
+## Audio EQ
+
+AetherPod includes 3 voice-optimized EQ presets (plus Off) that apply a
+lavfi parametric equalizer chain + lookahead limiter through mpv's `af`
+property at runtime:
+
+| Key | Preset | Character |
+|-----|--------|-----------|
+| `1` | **Off** | Unmodified audio |
+| `2` | **Bright** | Voice clarity — boosted presence (2.5–5 kHz), gentle low-end cut, thin/crisp |
+| `3` | **Warm** | Full-bodied — boosted lows (100–500 Hz), rolled-off highs, boomy/dark |
+| `4` | **Balanced** | Middle ground — slight warmth + presence, moderate shaping |
+
+Each preset includes a lookahead limiter with input gain boost (±5 dB) to give
+a compressed *loudness* feel while preventing peaks from clipping.
+
+**mpv only** — EQ requires mpv's lavfi bridge and is silently ignored when
+using VLC or ffplay as the audio engine.
+
+### Customizing presets
+
+Presets are stored as plain JSON at **`~/.config/aetherpod/eq.json`** (created
+automatically on first launch). The in-app help lists the current preset name
+in the status bar (e.g. `EQ:Bright`).
+
+The file is structured as:
+
+```json
+{
+  "_readme": "highpass: {frequency} or null.  eq: [{frequency, gain, q}...].  limiter: {level_in, limit, attack, release} or null.",
+  "presets": [
+    {
+      "label": "Off",
+      "highpass": null,
+      "eq": [],
+      "limiter": null
+    },
+    {
+      "label": "Bright",
+      "highpass": {"frequency": 100},
+      "eq": [
+        {"frequency": 200, "gain": -2, "q": 1},
+        {"frequency": 300, "gain": 2, "q": 1},
+        ...
+      ],
+      "limiter": {"level_in": 1.8, "limit": 0.89, "attack": 3, "release": 30}
+    }
+  ]
+}
+```
+
+Edit the values freely — invalid JSON falls back to the built-in defaults.
+The lavfi filter string is rebuilt from the JSON at load time.
 
 ## Logs
 

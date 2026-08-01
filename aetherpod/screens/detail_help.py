@@ -1,5 +1,5 @@
 # Created: 2026-07-27
-# Last Edited: 2026-07-27 15:54 CT (America/Chicago)
+# Last Edited: 2026-07-28 16:41 CT (America/Chicago)
 # Path: aetherpod/screens/detail_help.py
 # Purpose: Modal overlays — EpisodeDetailScreen and HelpScreen.
 
@@ -103,6 +103,7 @@ class HelpScreen(Screen[None]):
             ("a", "Add to play queue"),
             ("A", "Play next (stop current, play selected)"),
             ("v", "View play queue"),
+            ("1 / 2 / 3 / 4", "EQ presets: Off / Bright / Warm / Balanced"),
             ("t", "Toggle dark/light theme"),
             ("q", "Quit AetherPod"),
             ("?", "Show this help"),

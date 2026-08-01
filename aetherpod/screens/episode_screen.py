@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-27 15:54 CT (America/Chicago)
+# Last Edited: 2026-07-28 17:18 CT (America/Chicago)
 # Path: aetherpod/screens/episode_screen.py
 # Purpose: Episode browser for a single feed — play, filter, sort, scrub, queue.
 
@@ -55,6 +55,10 @@ class EpisodeScreen(Screen):
         Binding("d", "show_details", "Details"),
         Binding("n", "now_playing", "Now Playing"),
         Binding("m", "toggle_played", "Mark"),
+        Binding("1", "eq_off", "EQ:Off", key_display="1"),
+        Binding("2", "eq_bright", "EQ:Bright", key_display="2"),
+        Binding("3", "eq_warm", "EQ:Warm", key_display="3"),
+        Binding("4", "eq_balanced", "EQ:Balanced", key_display="4"),
         Binding("r", "restart", "Restart"),
         Binding("a", "add_to_queue", "Queue"),
         Binding("shift+a", "play_next", "Play Next", key_display="A"),
@@ -394,6 +398,30 @@ class EpisodeScreen(Screen):
             pass
         self._update_status_bar()
 
+    def action_eq_off(self) -> None:
+        self._player.set_eq_preset(0)
+        _, label = self._player.get_eq_preset()
+        self.notify(f"EQ: {label}", severity="information", timeout=1)
+        self._update_status_bar()
+
+    def action_eq_bright(self) -> None:
+        self._player.set_eq_preset(1)
+        _, label = self._player.get_eq_preset()
+        self.notify(f"EQ: {label}", severity="information", timeout=1)
+        self._update_status_bar()
+
+    def action_eq_warm(self) -> None:
+        self._player.set_eq_preset(2)
+        _, label = self._player.get_eq_preset()
+        self.notify(f"EQ: {label}", severity="information", timeout=1)
+        self._update_status_bar()
+
+    def action_eq_balanced(self) -> None:
+        self._player.set_eq_preset(3)
+        _, label = self._player.get_eq_preset()
+        self.notify(f"EQ: {label}", severity="information", timeout=1)
+        self._update_status_bar()
+
     def action_restart(self) -> None:
         if not self._player.is_playing():
             self.notify("Nothing playing to restart", severity="warning", timeout=2)
@@ -574,9 +602,11 @@ class EpisodeScreen(Screen):
         return sorted(episodes, key=key, reverse=not ascending)
 
     def _populate(self) -> None:
+        table = self.query_one("#episode-list", DataTable)
+        if not table.ordered_columns:
+            return
         self._row_keys.clear()
         self._episodes_by_row.clear()
-        table = self.query_one("#episode-list", DataTable)
         table.clear()
 
         sorted_eps = self._sort_episodes(
@@ -761,6 +791,11 @@ class EpisodeScreen(Screen):
         if q:
             t.append(" \u2502", style="dim")
             t.append(f" Q:{q}", style="bold cyan")
+
+        _, eq_label = self._player.get_eq_preset()
+        if eq_label != "Off":
+            t.append(" \u2502", style="dim")
+            t.append(f" EQ:{eq_label}", style="bold yellow")
 
         t.append(" \u2502", style="dim")
         t.append(f" ? help{filter_label}", style="dim")

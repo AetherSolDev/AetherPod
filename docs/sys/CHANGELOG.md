@@ -1,9 +1,21 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-27 16:49 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:12 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
 # Changelog
+
+## 2026-08-01 — v0.4.0 — Audio EQ Presets
+
+### Added
+- **Audio EQ presets** — 3 voice-optimized profiles (Bright / Warm / Balanced) plus Off, applied via mpv `af` filter chain with highpass + parametric EQ + lookahead limiter. Toggle instantly with `1`–`4` on Episode and Now Playing screens. mpv only (VLC/ffplay are no-ops).
+- **User-editable EQ config** — `eq.json` written to the config dir on first run; malformed values fall back to built-in defaults. (`aetherpod/eq_presets.py`)
+- **EQ status indicators** — current preset shown in the Now Playing controls and Episode status bar when not "Off".
+
+### Changed
+- **`AudioEngine` ABC** — new abstract `set_eq(af_string)` method; MpvEngine applies it via IPC (with retry), VlcEngine/FfplayEngine no-op.
+- **`Player`** — EQ preset state (`set_eq_preset`/`get_eq_preset`), re-applied to fresh mpv processes, and loaded at startup.
+- **Help/README** — `1`–`4` EQ keys documented in HelpScreen, README, and docs/HELP.md.
 
 ## 2026-07-27 — v0.3.1 — Audit Re-run, New_Project_init removal, cache cleanup
 
