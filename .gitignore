@@ -86,6 +86,12 @@ splash_preview.py
 
 # Project initialization template
 New_Project_init/
+project_kit/
+
+# Local-only reference files (not part of the app)
+Tayogo.json
+safety.md
+uv.lock
 
 # Stale root-level artifacts
 /ARCHITECTURE.md

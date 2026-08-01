@@ -1,5 +1,5 @@
 # Created: 2026-08-01
-# Last Edited: 2026-08-01 03:20 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:47 CT (America/Chicago)
 # Path: tests/unit/test_eq_presets.py
 # Purpose: Unit tests for EQ presets — af-string building and eq.json loading/fallback.
 
@@ -36,9 +36,8 @@ class TestBuildAfString:
         assert af == "lavfi=[equalizer=f=300:t=q:w=1:g=2]"
 
     def test_limiter_only(self) -> None:
-        af = _build_af_string(
-            {"highpass": None, "eq": [], "limiter": {"level_in": 1.8, "limit": 0.89, "attack": 3, "release": 30}}
-        )
+        limiter = {"level_in": 1.8, "limit": 0.89, "attack": 3, "release": 30}
+        af = _build_af_string({"highpass": None, "eq": [], "limiter": limiter})
         assert af == "alimiter=level_in=1.8:limit=0.89:attack=3:release=30"
 
 
