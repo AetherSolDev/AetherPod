@@ -1,9 +1,23 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 03:12 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:48 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
 # Changelog
+
+## 2026-08-01 — v0.4.1 — Audit Remediation, Cross-Platform Builds, AetherSolDev Rebrand
+
+### Added
+- **Cross-platform executables** — `.github/workflows/build.yml` builds single-file PyInstaller binaries for Linux, macOS, and Windows (Python 3.12). Uploaded as artifacts on every push; attached to a GitHub Release on `v*` tag pushes.
+- **EQ preset unit tests** — 11 tests for `_build_af_string` and `eq.json` load/fallback (suite now 37 tests).
+- **Platform badges + tagline** — Linux/macOS/Windows shields and the *"BTW.. I use Arch"* tagline in README and splash screen.
+
+### Changed
+- **Rebrand to AetherSolDev** — repository moved to `github.com/AetherSolDev/AetherPod`; `--upgrade` URL, README clone URL, and `pyproject.toml` description updated; commits now authored by `AetherSol <support@aethersol.io>`.
+- **Audit remediation (grade A)** — full linter-assisted re-audit; all F01–F28 findings resolved, including: scrubbed `data/state.json` from git history, narrowed `eq.json` load exception, removed 6 unused imports, sorted import blocks in 10 files, logged (not swallowed) widget-not-ready exceptions, regenerated audit reports fresh, updated maps + docs.
+
+### Removed
+- **Removed from git tracking** — `project_kit/`, `safety.md`, `uv.lock`, `Tayogo.json` (local-only files; the project does not use uv).
 
 ## 2026-08-01 — v0.4.0 — Audio EQ Presets
 
