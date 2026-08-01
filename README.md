@@ -22,6 +22,7 @@
   <img src="https://img.shields.io/badge/python-3.14+-blue?logo=python" alt="Python 3.14+">
   <img src="https://img.shields.io/badge/license-GPLv3-blue" alt="GPLv3">
   <img src="https://img.shields.io/badge/Textual-1.0-purple" alt="Textual 1.0">
+  <img src="https://github.com/AetherSolDev/AetherPod/actions/workflows/build.yml/badge.svg" alt="Build">
 </p>
 
 ---
@@ -48,6 +49,23 @@
 - **Async feed refresh** — instant cache on startup, background updates
 - **Splash screen** — branded startup with subscription stats
 - **Audio EQ presets** — 3 voice-optimized EQ profiles (Bright / Warm / Balanced) with lookahead limiter — toggle instantly with `1`–`4` *(mpv only)*
+
+---
+
+## Download a Pre-Built Executable (Recommended)
+
+No Python or pip needed. Grab the binary for your platform from the
+[Releases](https://github.com/AetherSolDev/AetherPod/releases) page
+(or the latest [Actions build](https://github.com/AetherSolDev/AetherPod/actions) artifacts):
+
+| Platform | Download |
+|----------|----------|
+| Windows (x86_64) | [aetherpod-windows.exe](https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-windows.exe) |
+| Linux (x86_64) | [aetherpod-linux](https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-linux) |
+| macOS (Apple Silicon) | [aetherpod-macos](https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-macos) |
+
+> The binaries are unsigned, so Windows SmartScreen and macOS Gatekeeper may warn on first run.
+> Windows: click **More info → Run anyway**. macOS: `xattr -d com.apple.quarantine aetherpod-macos`.
 
 ---
 
