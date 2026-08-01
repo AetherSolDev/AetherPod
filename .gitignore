@@ -34,6 +34,7 @@ build/
 app/build/
 app/release/
 app/debug/
+*.spec
 
 # Logs and temp
 logs/

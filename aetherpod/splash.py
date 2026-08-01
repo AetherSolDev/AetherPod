@@ -1,5 +1,5 @@
 # Created: 2026-07-25
-# Last Edited: 2026-08-01 03:20 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:30 CT (America/Chicago)
 # Path: aetherpod/splash.py
 # Purpose: Startup splash screen — ASCII logo, app stats, and features list.
 
@@ -69,7 +69,9 @@ class SplashRenderable:
         right_lines: list[Text] = [
             Text(f"  AetherPod v{__version__}", style=f"bold {BLUE} on {BG}"),
             _empty(),
-            Text("  Terminal podcast manager for Arch Linux", style=f"italic {MUTED} on {BG}"),
+            Text("  Terminal Podcast Manager", style=f"italic {MUTED} on {BG}"),
+            _empty(),
+            Text("  BTW.. I use Arch", style=f"italic {MUTED} on {BG}"),
             _empty(),
             _val("Feeds", str(self._n_feeds)),
             _val("Played", str(self._n_played)),

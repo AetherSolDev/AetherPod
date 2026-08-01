@@ -1,0 +1,57 @@
+# Created: 2026-08-01
+# Last Edited: 2026-08-01 03:31 CT (America/Chicago)
+# Path: .github/workflows/build.yml
+# Purpose: Build single-file executables for Linux, macOS, and Windows via PyInstaller; upload artifacts on every push and attach to GitHub Releases on version tags.
+
+name: Build Executables
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install .
+
+      - name: Build executable with PyInstaller
+        run: |
+          pyinstaller --onefile --name aetherpod --collect-submodules aetherpod aetherpod/cli.py
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aetherpod-${{ matrix.os }}
+          path: dist/*
+
+      - name: Attach to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          name: AetherPod ${{ github.ref_name }}
+          generate_release_notes: true

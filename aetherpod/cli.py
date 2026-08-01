@@ -1,5 +1,5 @@
 # Created: 2026-07-25
-# Last Edited: 2026-08-01 03:18 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:30 CT (America/Chicago)
 # Path: aetherpod/cli.py
 # Purpose: CLI entry point logic — argparse, logging setup, headless commands, TUI launch.
 
@@ -20,7 +20,7 @@ from aetherpod import __version__
 from aetherpod.engine import DataManager
 from aetherpod.rss import fetch_feed
 
-_UPGRADE_URL = "git+https://github.com/brandonmunoz1975-ops/AetherPod.git"
+_UPGRADE_URL = "git+https://github.com/AetherSolDev/AetherPod.git"
 """Default pip source for ``--upgrade``."""
 
 _SCRIPT_DIR = Path(__file__).resolve().parent.parent

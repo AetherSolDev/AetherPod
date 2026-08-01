@@ -8,12 +8,17 @@
 <h1 align="center">AetherPod</h1>
 
 <p align="center">
-  <em>Terminal podcast manager for Arch Linux</em>
+  <em>Terminal Podcast Manager</em>
   <br>
   Subscribe, browse, and play podcasts — all from your terminal.
+  <br>
+  <strong><em>BTW.. I use Arch</em></strong>
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Linux-%E2%9C%93-informational?logo=linux&logoColor=white" alt="Linux">
+  <img src="https://img.shields.io/badge/macOS-%E2%9C%93-informational?logo=apple&logoColor=white" alt="macOS">
+  <img src="https://img.shields.io/badge/Windows-%E2%9C%93-informational?logo=windows&logoColor=white" alt="Windows">
   <img src="https://img.shields.io/badge/python-3.14+-blue?logo=python" alt="Python 3.14+">
   <img src="https://img.shields.io/badge/license-GPLv3-blue" alt="GPLv3">
   <img src="https://img.shields.io/badge/Textual-1.0-purple" alt="Textual 1.0">
@@ -70,7 +75,7 @@ Choose one:
 
 ```bash
 # Option A — Interactive installer (recommended)
-git clone https://github.com/systemd/AetherPod.git
+git clone https://github.com/AetherSolDev/AetherPod.git
 cd AetherPod
 bash scripts/install.sh
 
