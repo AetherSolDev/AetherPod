@@ -1,5 +1,5 @@
 # Created: 2026-08-01
-# Last Edited: 2026-08-01 03:58 CT (America/Chicago)
+# Last Edited: 2026-08-01 04:04 CT (America/Chicago)
 # Path: .github/workflows/build.yml
 # Purpose: Build single-file executables for Linux, macOS, and Windows via PyInstaller; upload artifacts on every push and attach to GitHub Releases on version tags.
 
@@ -26,7 +26,9 @@ jobs:
           - os: ubuntu-latest
             binary: aetherpod-linux
           - os: macos-latest
-            binary: aetherpod-macos
+            binary: aetherpod-macos-arm64
+          - os: macos-15-intel
+            binary: aetherpod-macos-x86_64
           - os: windows-latest
             binary: aetherpod-windows.exe
 

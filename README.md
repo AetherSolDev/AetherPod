@@ -62,7 +62,8 @@ No Python or pip needed. Grab the binary for your platform from the
 |----------|----------|
 | Windows (x86_64) | [aetherpod-windows.exe](https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-windows.exe) |
 | Linux (x86_64) | [aetherpod-linux](https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-linux) |
-| macOS (Apple Silicon) | [aetherpod-macos](https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-macos) |
+| macOS (Apple Silicon) | [aetherpod-macos-arm64](https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-macos-arm64) |
+| macOS (Intel) | [aetherpod-macos-x86_64](https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-macos-x86_64) |
 
 > The binaries are unsigned, so Windows SmartScreen and macOS Gatekeeper may warn on first run.
 > Windows: click **More info → Run anyway**. macOS: `xattr -d com.apple.quarantine aetherpod-macos`.
