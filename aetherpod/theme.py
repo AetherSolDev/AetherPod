@@ -1,12 +1,11 @@
 # Created: 2026-07-24
-# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:18 CT (America/Chicago)
 # Path: aetherpod/theme.py
 # Purpose: Custom Textual themes — dark navy + blue/teal palette and light variant.
 
 from __future__ import annotations
 
 from textual.theme import Theme
-
 
 AETHERPOD_DARK = Theme(
     name="aetherpod-dark",

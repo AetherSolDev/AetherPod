@@ -1,16 +1,15 @@
 # Created: 2026-07-27
-# Last Edited: 2026-07-27 15:54 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:18 CT (America/Chicago)
 # Path: aetherpod/screens/search.py
 # Purpose: Cross-feed episode search screen — live filter by title.
 
 from __future__ import annotations
 
+from rich.text import Text
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.screen import Screen
 from textual.widgets import DataTable, Footer, Header, Input, Static
-
-from rich.text import Text
 
 from aetherpod.engine import DataManager
 from aetherpod.models import Episode

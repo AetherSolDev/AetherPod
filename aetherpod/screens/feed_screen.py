@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 03:13 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:18 CT (America/Chicago)
 # Path: aetherpod/screens/feed_screen.py
 # Purpose: Feed subscription list screen — main entry screen for AetherPod.
 
@@ -17,8 +17,8 @@ from aetherpod.engine import DataManager
 from aetherpod.models import FeedResult
 from aetherpod.player import Player
 from aetherpod.rss import fetch_feed_async
-from aetherpod.screens.dialogs import AddFeedDialog, PathInputDialog
 from aetherpod.screens.detail_help import HelpScreen
+from aetherpod.screens.dialogs import AddFeedDialog, PathInputDialog
 from aetherpod.screens.episode_screen import EpisodeScreen
 from aetherpod.screens.search import SearchScreen
 from aetherpod.widgets import LoadingSpinner

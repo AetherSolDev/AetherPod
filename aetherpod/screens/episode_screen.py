@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 03:13 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:18 CT (America/Chicago)
 # Path: aetherpod/screens/episode_screen.py
 # Purpose: Episode browser for a single feed — play, filter, sort, scrub, queue.
 
@@ -9,14 +9,13 @@ import asyncio
 import logging
 from pathlib import Path
 
+from rich.text import Text
+from textual import events
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual import events
 from textual.message import Message
 from textual.screen import Screen
 from textual.widgets import DataTable, Footer, Header, Static
-
-from rich.text import Text
 
 from aetherpod.engine import DataManager
 from aetherpod.engines import PlayerStatus
