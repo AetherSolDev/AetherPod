@@ -1,5 +1,5 @@
 # Created: 2026-07-27
-# Last Edited: 2026-08-01 03:18 CT (America/Chicago)
+# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
 # Path: aetherpod/screens/detail_help.py
 # Purpose: Modal overlays — EpisodeDetailScreen and HelpScreen.
 
@@ -78,6 +78,8 @@ class HelpScreen(Screen[None]):
             ("i", "Import OPML file"),
             ("e", "Export OPML file"),
             ("u", "Refresh all feeds"),
+            ("s", "Sort feeds: subscribe order \u2194 A\u2192Z \u2194 Z\u2192A"),
+            ("f", "Filter feeds by name"),
             ("/", "Search episodes"),
             ("r", "Remove selected feed"),
             ("Enter", "Browse episodes"),

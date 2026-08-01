@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 03:18 CT (America/Chicago)
+# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
 # Path: aetherpod/app.py
 # Purpose: Main Textual TUI application — screen orchestration, CSS, playback polling.
 
@@ -59,6 +59,21 @@ class AetherPod(App):
         background: $accent 15%;
     }
 
+    /* Zebra striping on feed list (Textual has no :nth-child) */
+    ListView > ListItem.zebra {
+        background: $panel;
+    }
+
+    /* ── Feed filter input ─────────────────────────────── */
+    #feed-filter {
+        display: none;
+        margin: 0 1;
+    }
+
+    #feed-filter.visible {
+        display: block;
+    }
+
     DataTable {
         height: 1fr;
         margin: 0 1;
@@ -69,6 +84,14 @@ class AetherPod(App):
         color: $text-muted;
         text-style: bold;
         height: 1;
+    }
+
+    DataTable > .datatable--even-row {
+        background: $surface;
+    }
+
+    DataTable > .datatable--odd-row {
+        background: $panel;
     }
 
     DataTable > .datatable--cursor {

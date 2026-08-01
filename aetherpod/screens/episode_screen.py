@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 03:18 CT (America/Chicago)
+# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
 # Path: aetherpod/screens/episode_screen.py
 # Purpose: Episode browser for a single feed — play, filter, sort, scrub, queue.
 
@@ -109,6 +109,7 @@ class EpisodeScreen(Screen):
         table.add_column("Progress", width=22)
         table.add_column("Duration", width=10)
         table.cursor_type = "row"
+        table.zebra_stripes = True
         self._populate()
         table.focus()
 

@@ -40,6 +40,8 @@
 
 - **Subscribe** to any RSS/Atom podcast feed
 - **Browse** episodes in a sortable DataTable with live progress bars
+- **Zebra-striped lists** — alternating row colors on feeds and episode tables for easy scanning
+- **Sort & filter feeds** — alphabetical order toggle (`s`) and inline name filter (`f`)
 - **Play / pause / seek / speed** control via mpv IPC
 - **Resume** playback where you left off
 - **Cross-feed search**
@@ -132,13 +134,15 @@ aetherpod list     # List subscribed feeds
 | Key | Action |
 |-----|--------|
 | `a` | Add feed |
+| `s` | Sort feeds (subscribe order → A-Z → Z-A) |
+| `f` | Filter feeds by name |
 | `Enter` | Browse episodes / Play |
 | `Space` | Pause / Resume |
-| `s` | Stop |
+| `s` | Stop *(Episode screen)* |
 | `[` / `]` | Speed down / up |
 | `←` / `→` | Seek -30s / +30s |
 | `1` / `2` / `3` / `4` | EQ presets: Off / Bright / Warm / Balanced *(mpv only)* |
-| `f` | Toggle unplayed filter |
+| `f` | Toggle unplayed filter *(Episode screen)* |
 | `a` | Add to play queue |
 | `v` | View play queue |
 | `/` | Search across all feeds |

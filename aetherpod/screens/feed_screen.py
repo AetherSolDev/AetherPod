@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 03:18 CT (America/Chicago)
+# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
 # Path: aetherpod/screens/feed_screen.py
 # Purpose: Feed subscription list screen — main entry screen for AetherPod.
 
@@ -10,8 +10,9 @@ import logging
 
 from textual.app import ComposeResult
 from textual.binding import Binding
+from textual.events import Key
 from textual.screen import Screen
-from textual.widgets import Footer, Header, Label, ListItem, ListView
+from textual.widgets import Footer, Header, Input, Label, ListItem, ListView
 
 from aetherpod.engine import DataManager
 from aetherpod.models import FeedResult
@@ -33,6 +34,8 @@ class FeedScreen(Screen):
         Binding("e", "export_opml", "Export OPML"),
         Binding("u", "refresh", "Refresh"),
         Binding("r", "remove_feed", "Remove"),
+        Binding("s", "toggle_sort", "Sort A-Z"),
+        Binding("f", "toggle_filter", "Filter"),
         Binding("slash", "search", "Search", key_display="/"),
         Binding("q", "quit", "Quit"),
         Binding("question_mark", "show_help", "Help", key_display="?"),
@@ -42,9 +45,12 @@ class FeedScreen(Screen):
         super().__init__()
         self._data = data_manager
         self._player = player
+        self._sort_asc: bool | None = None
+        self._filter_query: str = ""
 
     def compose(self) -> ComposeResult:
         yield Header()
+        yield Input(placeholder="Filter feeds\u2026", id="feed-filter", classes="feed-filter")
         yield LoadingSpinner(id="feed-status")
         yield ListView(id="feed-list")
         yield Footer()
@@ -115,6 +121,68 @@ class FeedScreen(Screen):
     def action_show_help(self) -> None:
         self.app.push_screen(HelpScreen(screen_name="Feed"))
 
+    def action_toggle_sort(self) -> None:
+        if self._sort_asc is None:
+            self._sort_asc = True
+        elif self._sort_asc:
+            self._sort_asc = False
+        else:
+            self._sort_asc = None
+        label = {None: "subscribe order", True: "A\u2192Z", False: "Z\u2192A"}[self._sort_asc]
+        self.notify(f"Feeds sorted: {label}", severity="information", timeout=2)
+        self._render_from_cache()
+
+    def action_toggle_filter(self) -> None:
+        filt = self.query_one("#feed-filter", Input)
+        if filt.has_class("visible"):
+            filt.remove_class("visible")
+            self._filter_query = ""
+            filt.value = ""
+            self.query_one("#feed-list", ListView).focus()
+            self._render_from_cache()
+            self.notify("Filter cleared", severity="information", timeout=1)
+        else:
+            filt.add_class("visible")
+            filt.focus()
+
+    def on_key(self, event: Key) -> None:
+        if event.key == "escape":
+            filt = self.query_one("#feed-filter", Input)
+            if filt.has_class("visible"):
+                filt.remove_class("visible")
+                self._filter_query = ""
+                filt.value = ""
+                self.query_one("#feed-list", ListView).focus()
+                self._render_from_cache()
+                event.stop()
+
+    def on_input_changed(self, event: Input.Changed) -> None:
+        if event.input.id != "feed-filter":
+            return
+        self._filter_query = event.value.strip().lower()
+        self._render_from_cache()
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        if event.input.id == "feed-filter":
+            self.action_toggle_filter()
+
+    def _display_order(self, urls: list[str]) -> list[str]:
+        """Apply filter + sort to the raw feed URL list."""
+        if self._filter_query:
+            urls = [
+                u for u in urls
+                if self._filter_query in self._feed_title_for(u).lower()
+            ]
+        if self._sort_asc is not None:
+            urls = sorted(urls, key=self._feed_title_for, reverse=not self._sort_asc)
+        return urls
+
+    def _feed_title_for(self, url: str) -> str:
+        cached = self._data.get_cached_result(url)
+        if cached and cached.title:
+            return cached.title
+        return url
+
     _last_playing_feed: str = ""
 
     def _update_playing_indicator(self, playing_feed_url: str) -> None:
@@ -123,7 +191,7 @@ class FeedScreen(Screen):
             self._render_from_cache()
 
     def _render_from_cache(self) -> None:
-        urls = self._data.get_feeds()
+        urls = self._display_order(self._data.get_feeds())
         feed_list = self.query_one("#feed-list", ListView)
         try:
             feed_list.clear()
@@ -131,16 +199,24 @@ class FeedScreen(Screen):
             logger.debug("Ignored ListView hover race during clear")
 
         if not urls:
-            feed_list.append(ListItem(Label("No feeds — press 'a' to add one")))
-            self._set_status("No feeds subscribed")
+            if self._filter_query:
+                feed_list.append(ListItem(Label(
+                    f"No feeds match \u201c{self._filter_query}\u201d \u2014 Esc to clear"
+                )))
+                self._set_status(f"No feeds match \u201c{self._filter_query}\u201d")
+            else:
+                feed_list.append(ListItem(Label("No feeds \u2014 press 'a' to add one")))
+                self._set_status("No feeds subscribed")
             return
 
         has_cache = False
         playing_feed_url = self._player.get_current_feed_url() if self._player.is_playing() else ""
 
-        for url in urls:
+        for idx, url in enumerate(urls):
             cached = self._data.get_cached_result(url)
             item = ListItem()
+            if idx % 2 == 1:
+                item.add_class("zebra")
             item._feed_url = url
             item._feed_result = cached
             if cached is not None:
@@ -173,7 +249,7 @@ class FeedScreen(Screen):
                 )
 
     async def _refresh_feeds(self) -> None:
-        urls = self._data.get_feeds()
+        urls = self._display_order(self._data.get_feeds())
         feed_list = self.query_one("#feed-list", ListView)
 
         if not urls:
@@ -196,8 +272,10 @@ class FeedScreen(Screen):
             feed_list.clear()
         except ValueError:
             logger.debug("Ignored ListView hover race during refresh")
-        for url, result in zip(urls, results):
+        for idx, (url, result) in enumerate(zip(urls, results)):
             item = ListItem()
+            if idx % 2 == 1:
+                item.add_class("zebra")
             item._feed_url = url
 
             playing_feed_url = (

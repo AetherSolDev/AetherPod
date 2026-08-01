@@ -1,5 +1,5 @@
 # Created: 2026-07-20
-# Last Edited: 2026-07-28 17:18 CT (America/Chicago)
+# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
 # Path: docs/HELP.md
 # Purpose: User guide and keybinding reference for AetherPod.
 
@@ -16,7 +16,10 @@
 | `e`       | Export OPML file  |
 | `u`       | Refresh all feeds |
 | `r`       | Remove feed       |
+| `s`       | Sort feeds: subscribe order → A→Z → Z→A |
+| `f`       | Filter feeds by name (type to filter, `Esc`/`f` to clear) |
 | `Enter`   | Browse episodes   |
+| `/`       | Search episodes across all feeds |
 | `Space`   | Toggle pause/resume (global) |
 | `t`       | Toggle theme      |
 | `q`       | Quit AetherPod    |
@@ -70,6 +73,15 @@
 
 Press `t` at any screen to toggle between the dark theme (navy base, blue/teal accents)
 and the light theme (white background, dark text).
+
+Feed and episode lists use zebra striping (alternating row shades) to make
+scanning easier. Rows with a `▷` prefix are currently playing.
+
+## Filtering Feeds
+
+- **Sort** (`s`) — cycles through *subscribe order → A→Z → Z→A* by feed title.
+- **Filter** (`f`) — opens an inline input; feeds are filtered by name as you type.
+  Press `Esc` (or `f` again) to close and clear the filter.
 
 ## CLI Commands
 
@@ -192,4 +204,4 @@ messages appear on stderr; INFO goes to the log file only.
 
 ## Verify
 
-This is AetherPod **v0.2.0**. Run `aetherpod --version` to confirm.
+This is AetherPod **v0.4.3**. Run `aetherpod --version` to confirm.

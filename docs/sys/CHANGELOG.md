@@ -1,9 +1,21 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 04:07 CT (America/Chicago)
+# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
 # Changelog
+
+## 2026-08-01 — v0.4.3 — Feed List UX: Sort, Filter, Zebra Striping
+
+### Added
+- **Feed list alphabetical sort** (`s` key) — cycles `subscribe order → A→Z → Z→A` on the FeedScreen. Sorts by cached feed title (falls back to URL before cache is populated).
+- **Feed list filter** (`f` key) — inline `Input` filters feeds by name as you type; `Esc` or `f` closes and clears; `Enter` submits. Empty-match state shows "No feeds match" with a clear hint.
+- **Zebra striping** — alternating row backgrounds on the feed list (`ListView > ListItem.zebra` via `$panel`) and on DataTables (episode list + search results) via native `zebra_stripes` + `datatable--odd-row`/`--even-row` CSS.
+
+### Changed
+- **HelpScreen (Feed)** — `s` (sort) and `f` (filter) documented.
+- **`aetherpod/screens/feed_screen.py`** — new `_display_order()` (filter + sort) shared by both render paths, `_feed_title_for()` sort key, `Input` widget in compose, `on_key` Escape handling for filter.
+- **`aetherpod/app.py`** — CSS for `#feed-filter`, `ListItem.zebra`, and DataTable zebra rows.
 
 ## 2026-08-01 — v0.4.2 — macOS Intel Builds & Public Downloads
 

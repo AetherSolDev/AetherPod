@@ -1,5 +1,5 @@
 # Created: 2026-07-27
-# Last Edited: 2026-08-01 03:18 CT (America/Chicago)
+# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
 # Path: aetherpod/screens/search.py
 # Purpose: Cross-feed episode search screen — live filter by title.
 
@@ -50,6 +50,7 @@ class SearchScreen(Screen[None]):
         table.add_column("Title", width=50)
         table.add_column("Date", width=12)
         table.cursor_type = "row"
+        table.zebra_stripes = True
 
     def on_input_changed(self, event: Input.Changed) -> None:
         query = event.value.strip().lower()
