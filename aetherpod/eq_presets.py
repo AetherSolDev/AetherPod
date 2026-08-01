@@ -1,5 +1,5 @@
 # Created: 2026-07-28
-# Last Edited: 2026-07-28 17:13 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:15 CT (America/Chicago)
 # Path: aetherpod/eq_presets.py
 # Purpose: Load/build EQ preset strings from eq.json, with hardcoded defaults.
 
@@ -97,7 +97,7 @@ def load_eq_presets(config_dir: str | Path) -> dict[int, tuple[str, str]]:
             if not raw or not isinstance(raw, list):
                 raise ValueError("presets must be a non-empty list")
             return _presets_to_map(raw)
-        except Exception as exc:
+        except (OSError, ValueError, KeyError, TypeError) as exc:
             logger.warning("Failed to load eq.json: %s — using defaults", exc)
     else:
         try:
