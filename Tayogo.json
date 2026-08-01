@@ -1,0 +1,104 @@
+{
+    "output": {
+        "blocklist": [],
+        "equalizer#0": {
+            "bypass": false,
+            "mode": "IIR",
+            "num-bands": 5,
+            "left": {
+                "band0": {
+                    "frequency": 150.0,
+                    "gain": -2.0,
+                    "type": "Bell",
+                    "q": 1.0
+                },
+                "band1": {
+                    "frequency": 300.0,
+                    "gain": 3.0,
+                    "type": "Bell",
+                    "q": 1.0
+                },
+                "band2": {
+                    "frequency": 2500.0,
+                    "gain": 2.5,
+                    "type": "Bell",
+                    "q": 1.0
+                },
+                "band3": {
+                    "frequency": 5000.0,
+                    "gain": 1.0,
+                    "type": "Bell",
+                    "q": 1.0
+                },
+                "band4": {
+                    "frequency": 8000.0,
+                    "gain": -1.0,
+                    "type": "Bell",
+                    "q": 1.0
+                }
+            },
+            "right": {
+                "band0": {
+                    "frequency": 150.0,
+                    "gain": -2.0,
+                    "type": "Bell",
+                    "q": 1.0
+                },
+                "band1": {
+                    "frequency": 300.0,
+                    "gain": 3.0,
+                    "type": "Bell",
+                    "q": 1.0
+                },
+                "band2": {
+                    "frequency": 2500.0,
+                    "gain": 2.5,
+                    "type": "Bell",
+                    "q": 1.0
+                },
+                "band3": {
+                    "frequency": 5000.0,
+                    "gain": 1.0,
+                    "type": "Bell",
+                    "q": 1.0
+                },
+                "band4": {
+                    "frequency": 8000.0,
+                    "gain": -1.0,
+                    "type": "Bell",
+                    "q": 1.0
+                }
+            }
+        },
+        "compressor#0": {
+            "attack": 10.0,
+            "bypass": false,
+            "knee": 3.0,
+            "makeup": 2.0,
+            "output-gain": 0.0,
+            "ratio": 4.0,
+            "release": 200.0,
+            "sidechain": {
+                "lookahead": 0.0,
+                "mode": "RMS",
+                "reactivity": 10.0,
+                "source": "Middle",
+                "type": "Feed-forward"
+            },
+            "threshold": -15.0
+        },
+        "limiter#0": {
+            "attack": 5.0,
+            "bypass": false,
+            "lookahead": 5.0,
+            "output-gain": 0.0,
+            "release": 10.0,
+            "threshold": -1.0
+        },
+        "plugins_order": [
+            "equalizer#0",
+            "compressor#0",
+            "limiter#0"
+        ]
+    }
+}
