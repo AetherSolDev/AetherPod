@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-27 15:54 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:13 CT (America/Chicago)
 # Path: aetherpod/screens/feed_screen.py
 # Purpose: Feed subscription list screen — main entry screen for AetherPod.
 
@@ -262,16 +262,16 @@ class FeedScreen(Screen):
     def _start_spinner(self, msg: str) -> None:
         try:
             self.query_one("#feed-status", LoadingSpinner).start(msg)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Feed status widget not ready: %s", exc)
 
     def _set_status(self, msg: str) -> None:
         try:
             spinner = self.query_one("#feed-status", LoadingSpinner)
             spinner.stop()
             spinner.update(msg)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Feed status widget not ready: %s", exc)
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
         item = event.item

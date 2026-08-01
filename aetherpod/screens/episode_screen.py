@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-28 17:18 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:13 CT (America/Chicago)
 # Path: aetherpod/screens/episode_screen.py
 # Purpose: Episode browser for a single feed — play, filter, sort, scrub, queue.
 
@@ -394,8 +394,8 @@ class EpisodeScreen(Screen):
             table.update_cell(row_key, "Progress", bar_cell)
             table.update_cell(row_key, "Duration", duration_cell)
             table.refresh()
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Could not refresh row after toggle: %s", exc)
         self._update_status_bar()
 
     def action_eq_off(self) -> None:
@@ -808,5 +808,5 @@ class EpisodeScreen(Screen):
             spinner = self.query_one("#ep-status", LoadingSpinner)
             spinner.stop()
             spinner.update(msg)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Episode status widget not ready: %s", exc)
