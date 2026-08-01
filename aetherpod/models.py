@@ -1,12 +1,11 @@
 # Created: 2026-07-27
-# Last Edited: 2026-07-27 15:54 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:17 CT (America/Chicago)
 # Path: aetherpod/models.py
 # Purpose: Shared dataclasses — Episode, ProgressInfo, FeedResult.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
 
 
 @dataclass

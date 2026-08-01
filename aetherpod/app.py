@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-07-27 16:09 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:17 CT (America/Chicago)
 # Path: aetherpod/app.py
 # Purpose: Main Textual TUI application — screen orchestration, CSS, playback polling.
 
@@ -18,7 +18,6 @@ from aetherpod.player import Player
 from aetherpod.screens.feed_screen import FeedScreen
 from aetherpod.screens.episode_screen import EpisodeScreen
 from aetherpod.screens.now_playing import NowPlayingScreen
-from aetherpod.screens.queue import QueueScreen
 from aetherpod.screens.splash import SplashScreen
 from aetherpod.theme import THEMES
 

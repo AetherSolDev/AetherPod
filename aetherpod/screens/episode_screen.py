@@ -24,7 +24,6 @@ from aetherpod.models import Episode, FeedResult
 from aetherpod.player import Player
 from aetherpod.rss import fetch_feed_async
 from aetherpod.screens.detail_help import EpisodeDetailScreen, HelpScreen
-from aetherpod.screens.dialogs import PathInputDialog
 from aetherpod.screens.helpers import format_date
 from aetherpod.screens.now_playing import NowPlayingScreen
 from aetherpod.screens.queue import QueueScreen

@@ -1,5 +1,5 @@
 # Created: 2026-07-26
-# Last Edited: 2026-07-28 16:49 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:17 CT (America/Chicago)
 # Path: aetherpod/engines.py
 # Purpose: Audio engine abstraction — MpvEngine, VlcEngine, FfplayEngine.
 
@@ -13,11 +13,9 @@ import shutil
 import socket
 import subprocess
 import tempfile
-import threading
 import time
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from pathlib import Path
+from dataclasses import dataclass
 from typing import ClassVar
 
 logger = logging.getLogger(__name__)
