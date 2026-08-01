@@ -1,5 +1,5 @@
 # Created: 2026-07-26
-# Last Edited: 2026-07-26 11:07 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:23 CT (America/Chicago)
 # Path: docs/sys/aetherpod.mmd
 # Purpose: Mermaid flowchart for AetherPod architecture.
 
@@ -39,6 +39,7 @@ flowchart TD
         FF -->|stdin| FCTL[Pause only]
 
         MPV_BIN & VLC_BIN & FF_BIN -.->|OS PATH| DETECT[detect_engine]
+        P -->|set_eq_preset| EQ[eq.json / EQ presets]
         P -->|callback| DM
         P -.->|downloads| CACHE[(~/.cache/aetherpod)]
     end
