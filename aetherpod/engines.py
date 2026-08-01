@@ -1,5 +1,5 @@
 # Created: 2026-07-26
-# Last Edited: 2026-08-01 03:17 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:20 CT (America/Chicago)
 # Path: aetherpod/engines.py
 # Purpose: Audio engine abstraction — MpvEngine, VlcEngine, FfplayEngine.
 
@@ -271,7 +271,7 @@ class MpvEngine(AudioEngine):
             s.connect(path)
             self._sock = s
             return True
-        except (OSError, socket.error) as exc:
+        except OSError as exc:
             logger.debug("IPC connect failed: %s", exc)
             self._sock = None
             return False
@@ -293,7 +293,7 @@ class MpvEngine(AudioEngine):
                             return json.loads(line)
                         except json.JSONDecodeError:
                             continue
-        except (OSError, socket.error) as exc:
+        except OSError as exc:
             logger.debug("IPC command failed: %s", exc)
             self._sock = None
         return None
@@ -525,7 +525,7 @@ class VlcEngine(AudioEngine):
             s.connect((self._RC_HOST, self._RC_PORT))
             self._sock = s
             return True
-        except (OSError, socket.error) as exc:
+        except OSError as exc:
             logger.debug("VLC RC connect failed: %s", exc)
             self._sock = None
             return False
@@ -542,7 +542,7 @@ class VlcEngine(AudioEngine):
                 text = raw.decode("utf-8", errors="replace").strip()
                 lines = [l for l in text.split("\n") if l.strip()]
                 return lines[-1] if lines else None
-        except (OSError, socket.error) as exc:
+        except OSError as exc:
             logger.debug("VLC RC command failed: %s", exc)
             self._sock = None
         return None

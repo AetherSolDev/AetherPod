@@ -1,5 +1,5 @@
 # Created: 2026-07-27
-# Last Edited: 2026-07-27 15:54 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:20 CT (America/Chicago)
 # Path: aetherpod/rss.py
 # Purpose: RSS/Atom feed fetching and parsing — fetch_feed, fetch_feed_async, helpers.
 
@@ -182,9 +182,7 @@ async def fetch_feed_async(url: str, timeout: int = 15,
         for ep in episodes:
             if ep.published:
                 pub_dt = _parse_feed_date(ep.published)
-                if pub_dt is not None and pub_dt >= cutoff:
-                    filtered.append(ep)
-                elif pub_dt is None:
+                if pub_dt is not None and pub_dt >= cutoff or pub_dt is None:
                     filtered.append(ep)
             else:
                 filtered.append(ep)

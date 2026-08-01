@@ -1,5 +1,5 @@
 # Created: 2026-07-25
-# Last Edited: 2026-08-01 03:17 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:20 CT (America/Chicago)
 # Path: aetherpod/splash.py
 # Purpose: Startup splash screen — ASCII logo, app stats, and features list.
 
@@ -109,7 +109,7 @@ class SplashRenderable:
                 if i < len(left_padded)
                 else Text(" " * logo_width, style=f"on {BG}")
             )
-            sep = Text(f" \u2502 ", style=f"bold {BORDER} on {BG}")
+            sep = Text(" \u2502 ", style=f"bold {BORDER} on {BG}")
             table.add_row(left_cell, sep, right_lines[i])
 
         yield table

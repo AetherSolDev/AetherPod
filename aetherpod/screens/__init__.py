@@ -1,5 +1,5 @@
 # Created: 2026-07-27
-# Last Edited: 2026-08-01 03:18 CT (America/Chicago)
+# Last Edited: 2026-08-01 03:20 CT (America/Chicago)
 # Path: aetherpod/screens/__init__.py
 # Purpose: Re-export all screen classes for easy importing.
 
@@ -13,15 +13,15 @@ from aetherpod.screens.search import SearchScreen
 from aetherpod.screens.splash import SplashScreen
 
 __all__ = [
-    "FeedScreen",
-    "EpisodeScreen",
-    "PlaybackStateChanged",
     "AddFeedDialog",
-    "PathInputDialog",
-    "NowPlayingScreen",
-    "SearchScreen",
     "EpisodeDetailScreen",
+    "EpisodeScreen",
+    "FeedScreen",
     "HelpScreen",
-    "SplashScreen",
+    "NowPlayingScreen",
+    "PathInputDialog",
+    "PlaybackStateChanged",
     "QueueScreen",
+    "SearchScreen",
+    "SplashScreen",
 ]
