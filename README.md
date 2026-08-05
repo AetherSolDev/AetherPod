@@ -19,9 +19,10 @@
   <img src="https://img.shields.io/badge/Linux-%E2%9C%93-informational?logo=linux&logoColor=white" alt="Linux">
   <img src="https://img.shields.io/badge/macOS-%E2%9C%93-informational?logo=apple&logoColor=white" alt="macOS">
   <img src="https://img.shields.io/badge/Windows-%E2%9C%93-informational?logo=windows&logoColor=white" alt="Windows">
-  <img src="https://img.shields.io/badge/python-3.14+-blue?logo=python" alt="Python 3.14+">
+  <img src="https://img.shields.io/badge/python-3.9+-blue?logo=python" alt="Python 3.9+">
   <img src="https://img.shields.io/badge/license-GPLv3-blue" alt="GPLv3">
   <img src="https://img.shields.io/badge/Textual-1.0-purple" alt="Textual 1.0">
+  <img src="https://img.shields.io/pypi/v/aetherpod?logo=pypi&logoColor=white&color=3776AB" alt="PyPI">
   <img src="https://github.com/AetherSolDev/AetherPod/actions/workflows/build.yml/badge.svg" alt="Build">
 </p>
 
@@ -57,11 +58,13 @@
 
 ---
 
-## Download a Pre-Built Executable (Recommended)
+## Download a Pre-Built Executable
 
 No Python or pip needed. Grab the binary for your platform from the
 [Releases](https://github.com/AetherSolDev/AetherPod/releases) page
 (or the latest [Actions build](https://github.com/AetherSolDev/AetherPod/actions) artifacts):
+
+> Prefer a package manager? **`pip install aetherpod`** (PyPI) works on Linux, macOS, and Windows.
 
 | Platform | Download |
 |----------|----------|
@@ -79,7 +82,7 @@ No Python or pip needed. Grab the binary for your platform from the
 
 ### Prerequisites
 
-- Python 3.14+
+- Python 3.9+
 - [mpv](https://mpv.io/) (Linux/macOS) or [VLC](https://www.videolan.org/vlc/) (Windows, or any platform) — audio player
 
 > **Windows:** VLC is detected automatically even when not on PATH (installed
@@ -107,21 +110,30 @@ brew install mpv
 
 ### Install
 
-Choose one:
+AetherPod is on **PyPI** and published to GitHub Releases on every version tag.
 
+**Option 1 — pip / pipx (recommended, all platforms):**
 ```bash
-# Option A — Interactive installer (recommended)
+pipx install aetherpod        # isolated env + on PATH (best for a CLI/TUI)
+# or
+pip install --user aetherpod
+```
+
+**Option 2 — Interactive installer (from source):**
+```bash
 git clone https://github.com/AetherSolDev/AetherPod.git
 cd AetherPod
 bash scripts/install.sh
+```
 
-# Option B — Makefile (system-wide)
-make install
+**Option 3 — Makefile:**
+```bash
+make install           # system-wide
+make install-user      # user-local, no root
+```
 
-# Option C — Makefile (user-local, no root)
-make install-user
-
-# Option D — Manual venv
+**Option 4 — Manual venv:**
+```bash
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -153,7 +165,7 @@ when one is available.
 aetherpod -u    # Upgrade to the latest version
 ```
 
-- **Editable / pip installs** — `-u` pulls the update straight from git (no release build needed).
+- **pip / pipx installs** — upgrade via `pip install --upgrade aetherpod` (or `pipx upgrade aetherpod`). `aetherpod -u` also works for editable/git installs.
 - **Executable installs** — download the new binary from the [Releases](https://github.com/AetherSolDev/AetherPod/releases) page (`-u` requires pip/git and will not work inside a bundled executable).
 
 ## Usage
