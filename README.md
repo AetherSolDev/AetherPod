@@ -29,6 +29,8 @@
 
 ## Screenshots
 
+![Demo](assets/screens/aetherpod-demo.gif)
+
 ![Splash](assets/screens/splash.png)
 ![Episodes](assets/screens/episodes.png)
 ![Playing](assets/screens/playing.png)
