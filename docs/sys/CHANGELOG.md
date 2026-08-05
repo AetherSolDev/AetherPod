@@ -1,9 +1,15 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-05 14:24 CT (America/Chicago)
+# Last Edited: 2026-08-05 15:09 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
 # Changelog
+
+## 2026-08-05 — v0.4.5 — Stale Feed Row Click Crash Fix
+
+### Fixed
+- **`ValueError: list.index(x): x not in list` on the feed list** — clicking a feed row while a background refresh was rebuilding the ListView crashed Textual. The click's `Selected` message bubbled to `FeedScreen.on_list_view_selected` for a `ListItem` that had already been replaced, so the ListView's `self._nodes.index(event.item)` threw. The handler now guards with `item not in feed_list._nodes` and ignores the stale selection. (`aetherpod/screens/feed_screen.py`)
+- **Regression tests** — `tests/unit/test_feed_screen.py` (2 tests: stale selection ignored, live selection browses); suite now 69.
 
 ## 2026-08-05 — v0.4.4 — Feed List Focus Fix
 

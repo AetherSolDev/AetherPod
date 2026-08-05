@@ -137,7 +137,7 @@ So new-package creation is throttled/blocked while Arch builds a permanent solut
 ```bash
 # Maintainer: AetherSol <support@aethersol.io>
 pkgname=aetherpod
-pkgver=0.4.4
+pkgver=0.4.5
 pkgrel=1
 pkgdesc="Terminal Podcast Manager — subscribe, browse, and play podcasts from your terminal"
 arch=('any')

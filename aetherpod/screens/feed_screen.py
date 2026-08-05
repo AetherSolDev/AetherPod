@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-05 12:31 CT (America/Chicago)
+# Last Edited: 2026-08-05 14:45 CT (America/Chicago)
 # Path: aetherpod/screens/feed_screen.py
 # Purpose: Feed subscription list screen — main entry screen for AetherPod.
 
@@ -360,6 +360,12 @@ class FeedScreen(Screen):
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
         item = event.item
+        feed_list = self.query_one("#feed-list", ListView)
+        if item not in feed_list._nodes:
+            # Clicked item was replaced by a background refresh before the
+            # ListView could resolve its index; ignore the stale selection.
+            logger.debug("Ignoring selection for stale ListItem")
+            return
         result: FeedResult | None = getattr(item, "_feed_result", None)
         url: str | None = getattr(item, "_feed_url", None)
         if result is not None and result.error:

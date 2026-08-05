@@ -238,4 +238,4 @@ messages appear on stderr; INFO goes to the log file only.
 
 ## Verify
 
-This is AetherPod **v0.4.4**. Run `aetherpod --version` to confirm.
+This is AetherPod **v0.4.5**. Run `aetherpod --version` to confirm.
