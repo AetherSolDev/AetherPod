@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-05 12:31 CT (America/Chicago)
+# Last Edited: 2026-08-05 12:52 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
@@ -11,7 +11,7 @@
 - **Keyboard navigation broken on launch** — the hidden `#feed-filter` Input was stealing focus from the feed `ListView` on mount, so `Down`/`Enter` (and thus browsing a feed) did nothing until the user tabbed or clicked elsewhere. The filter input is now `can_focus = False` until toggled open with `f` (re-enabled on open, disabled again on close/Esc). `FeedScreen.on_mount` also explicitly focuses the list. Found while producing the Terminal Trove demo GIF (VHS virtual-terminal testing surfaced it). (`aetherpod/screens/feed_screen.py`)
 
 ### Added
-- **`assets/screens/aetherpod-demo.gif`** — 1200×760 animated demo (splash → feed list → episode table → details → cross-feed search → theme toggle) recorded with charmbracelet/VHS against local seeded feeds. Primary preview for the Terminal Trove submission.
+- **`assets/screens/aetherpod-demo.gif`** — 1900×1000 animated demo (splash → feed list → episode table → details → cross-feed search → theme toggle) recorded with charmbracelet/VHS against local seeded feeds. Primary preview for the Terminal Trove submission. Re-recorded at 1900×1000 after the 1200×760 capture wrapped the 93-column splash (VHS terminal was only 66 cols wide).
 - **`docs/sys/TERMINAL_TROVE_SUBMISSION.md`** — pre-filled Terminal Trove "Post a Tool" form (name, url, tagline, description, standout/other features, who-for, language/license, categories, preview images, per-platform install commands) plus an AUR packaging section with a draft PKGBUILD.
 
 ## 2026-08-01 — v0.4.3 — Feed Sort/Filter, Zebra Striping, Auto Update Check

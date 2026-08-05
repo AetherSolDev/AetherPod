@@ -1,5 +1,5 @@
 # Created: 2026-08-05
-# Last Edited: 2026-08-05 12:31 CT (America/Chicago)
+# Last Edited: 2026-08-05 12:51 CT (America/Chicago)
 # Path: docs/sys/TERMINAL_TROVE_SUBMISSION.md
 # Purpose: Pre-filled "Post a Tool" submission for Terminal Trove (https://terminaltrove.com/post/).
 
@@ -53,7 +53,7 @@ Criteria check:
 
 | File | Size |
 |------|------|
-| `assets/screens/aetherpod-demo.gif` | 1200×760, 676 KB — **recommended preview** (full demo: splash → feed list → episodes → details → search → theme) |
+| `assets/screens/aetherpod-demo.gif` | 1900×1000, 799 KB — **recommended preview** (full demo: splash → feed list → episodes → details → search → theme) |
 | `assets/screens/splash.png` | 1221×405, 78 KB |
 | `assets/screens/episodes.png` | 1255×435, 232 KB |
 | `assets/screens/playing.png` | 1340×540, 222 KB |
