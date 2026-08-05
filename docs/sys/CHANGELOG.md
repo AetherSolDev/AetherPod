@@ -1,11 +1,16 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-05 12:52 CT (America/Chicago)
+# Last Edited: 2026-08-05 14:24 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
 # Changelog
 
 ## 2026-08-05 — v0.4.4 — Feed List Focus Fix
+
+### Added
+- **Published to PyPI** — `aetherpod 0.4.4` live at https://pypi.org/project/aetherpod/. `pip install aetherpod` works on Linux/macOS/Windows. pyproject.toml enriched with readme/license/keywords/classifiers/urls.
+- **PyPI Trusted Publishing** — `.github/workflows/pypi.yml` auto-publishes to PyPI via OIDC on every `v*` tag (no token on CI). Dry-run verified; next real version tag triggers it.
+- **README PyPI support** — PyPI badge, `pip`/`pipx` as recommended install, upgrade via `pip install --upgrade`/`pipx upgrade`, Python version corrected to 3.9+.
 
 ### Fixed
 - **Keyboard navigation broken on launch** — the hidden `#feed-filter` Input was stealing focus from the feed `ListView` on mount, so `Down`/`Enter` (and thus browsing a feed) did nothing until the user tabbed or clicked elsewhere. The filter input is now `can_focus = False` until toggled open with `f` (re-enabled on open, disabled again on close/Esc). `FeedScreen.on_mount` also explicitly focuses the list. Found while producing the Terminal Trove demo GIF (VHS virtual-terminal testing surfaced it). (`aetherpod/screens/feed_screen.py`)
