@@ -1,9 +1,15 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-05 15:09 CT (America/Chicago)
+# Last Edited: 2026-08-05 15:31 CT (America/Chicago)
 # Path: docs/sys/CHANGELOG.md
 # Purpose: Release history for AetherPod.
 
 # Changelog
+
+## 2026-08-05 — v0.4.6 — Resume-after-Stop Fix (mpv --start)
+
+### Fixed
+- **Playback resume restarted from 0 after Stop** — stop then replaying an episode started over instead of resuming from the saved position, even though the episode had been downloaded to the cache. `MpvEngine.play()` launched mpv with `--start <pos>` (space-separated), which mpv rejects for numeric options (`option requires parameter`) and exits code 1; the "retry from beginning" fallback then replayed from 0. Now uses the `--start=<pos>` equals form. (`aetherpod/engines.py`)
+- **Regression tests** — `TestMpvResumeArg` in `tests/unit/test_engines.py` (2 tests: `--start=value` form used, no flag without a position). Suite now 71.
 
 ## 2026-08-05 — v0.4.5 — Stale Feed Row Click Crash Fix
 

@@ -1,5 +1,5 @@
 # Created: 2026-08-01
-# Last Edited: 2026-08-01 12:09 CT (America/Chicago)
+# Last Edited: 2026-08-05 15:29 CT (America/Chicago)
 # Path: tests/unit/test_engines.py
 # Purpose: Unit tests for audio-engine binary discovery (Windows install dirs, registry, platform gating).
 
@@ -144,3 +144,54 @@ class TestDetectEngineMacos:
         engine = eng.detect_engine()
         assert engine is not None
         assert isinstance(engine, eng.VlcEngine)
+
+
+class TestMpvResumeArg:
+    def test_start_uses_equals_form(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """mpv rejects `--start value` (space) — it must be `--start=value`.
+
+        Regression: AetherPod downloaded the episode for resume but mpv exited
+        immediately with "Error parsing commandline option start: option requires
+        parameter", so playback silently restarted from 0.
+        """
+        captured: list[list[str]] = []
+
+        class FakePopen:
+            def __init__(self, cmd, **kwargs):
+                captured.append(cmd)
+                self.stdout = None
+                self.stderr = None
+
+            def poll(self):
+                return None
+
+        monkeypatch.setattr(eng.subprocess, "Popen", FakePopen)
+        monkeypatch.setattr(eng, "_find_binary", lambda name: "/usr/bin/mpv")
+
+        engine = eng.MpvEngine()
+        engine.play("https://example.com/ep.mp3", start_pos=123.4)
+
+        assert captured, "mpv was never launched"
+        cmd = captured[0]
+        start_flags = [a for a in cmd if a.startswith("--start")]
+        assert start_flags == ["--start=123.4"], f"bad start flag: {start_flags}"
+
+    def test_no_start_flag_without_position(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        captured: list[list[str]] = []
+
+        class FakePopen:
+            def __init__(self, cmd, **kwargs):
+                captured.append(cmd)
+                self.stdout = None
+                self.stderr = None
+
+            def poll(self):
+                return None
+
+        monkeypatch.setattr(eng.subprocess, "Popen", FakePopen)
+        monkeypatch.setattr(eng, "_find_binary", lambda name: "/usr/bin/mpv")
+
+        engine = eng.MpvEngine()
+        engine.play("https://example.com/ep.mp3")  # no start_pos
+
+        assert not any(a.startswith("--start") for a in captured[0])

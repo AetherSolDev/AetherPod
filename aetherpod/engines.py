@@ -1,5 +1,5 @@
 # Created: 2026-07-26
-# Last Edited: 2026-08-01 12:26 CT (America/Chicago)
+# Last Edited: 2026-08-05 15:29 CT (America/Chicago)
 # Path: aetherpod/engines.py
 # Purpose: Audio engine abstraction — MpvEngine, VlcEngine, FfplayEngine.
 
@@ -276,7 +276,10 @@ class MpvEngine(AudioEngine):
             "--user-agent=AetherPod/1.0",
         ]
         if start_pos is not None and start_pos > 0:
-            cmd.extend(["--start", str(start_pos)])
+            # mpv requires `--start=value` — the space-separated form
+            # ("--start value") is rejected for numeric options and mpv
+            # exits immediately with code 1.
+            cmd.append(f"--start={start_pos}")
         cmd.append(url)
 
         logger.debug("mpv command: %s", " ".join(cmd))

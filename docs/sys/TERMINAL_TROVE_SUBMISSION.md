@@ -1,9 +1,12 @@
 # Created: 2026-08-05
-# Last Edited: 2026-08-05 14:19 CT (America/Chicago)
+# Last Edited: 2026-08-05 15:16 CT (America/Chicago)
 # Path: docs/sys/TERMINAL_TROVE_SUBMISSION.md
 # Purpose: Pre-filled "Post a Tool" submission for Terminal Trove (https://terminaltrove.com/post/).
 
 # AetherPod — Terminal Trove Submission
+
+> **STATUS: SUBMITTED 2026-08-05** — form submitted by the user. Remaining follow-up is
+> waiting for Terminal Trove curation/review (email confirmation + listing go-live).
 
 Criteria check:
 1. Cross platform — yes (Linux, macOS, Windows).
@@ -115,7 +118,7 @@ When you select `python` as the primary language, the form **auto-adds** these r
 ## Author & Confirmation
 
 - **Are you the author?** yes
-- **Email:** (user to fill in before submitting)
+- **Email:** (filled in by user at submit time — form submitted 2026-08-05)
 - **Confirm criteria read:** yes
 
 ---
@@ -137,7 +140,7 @@ So new-package creation is throttled/blocked while Arch builds a permanent solut
 ```bash
 # Maintainer: AetherSol <support@aethersol.io>
 pkgname=aetherpod
-pkgver=0.4.5
+pkgver=0.4.6
 pkgrel=1
 pkgdesc="Terminal Podcast Manager — subscribe, browse, and play podcasts from your terminal"
 arch=('any')
