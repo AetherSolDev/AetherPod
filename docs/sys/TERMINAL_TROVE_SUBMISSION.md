@@ -1,5 +1,5 @@
 # Created: 2026-08-05
-# Last Edited: 2026-08-05 12:51 CT (America/Chicago)
+# Last Edited: 2026-08-05 14:19 CT (America/Chicago)
 # Path: docs/sys/TERMINAL_TROVE_SUBMISSION.md
 # Purpose: Pre-filled "Post a Tool" submission for Terminal Trove (https://terminaltrove.com/post/).
 
@@ -21,8 +21,8 @@ Criteria check:
 | url | `github.com/AetherSolDev/AetherPod` |
 | tagline | Subscribe, browse, and play podcasts from your terminal — a Textual TUI podcast manager. |
 
-### Description (250–300 chars required) — ~283 chars
-> AetherPod is a full-featured terminal podcast manager built on the Textual framework. Subscribe to any RSS/Atom podcast feed, browse episodes in a sortable data table, and play them through mpv, VLC, or ffplay. It resumes playback where you left off, tracks played episodes, and keeps all state in a portable JSON file — a fast, keyboard-driven alternative to GUI podcast apps.
+### Description (250–300 chars required) — 297 chars
+> AetherPod is a full-featured terminal podcast manager built on Textual. Subscribe to RSS/Atom feeds, browse episodes in a sortable table, play via mpv, VLC, or ffplay. Resume where you left off, track played episodes, keep state in a portable JSON file - a keyboard-driven alternative to GUI apps.
 
 ### 2–3 Standout Features (150–300 chars required) — ~210 chars
 > Playback resumes exactly where you left off with live progress bars in the episode table. Cross-feed search finds any episode in your whole library instantly. Audio EQ presets (mpv) tailor voice clarity with the 1–4 keys, and a play queue auto-advances to the next episode.
@@ -72,37 +72,43 @@ Raw URLs for upload (or host elsewhere):
 
 ## Install Instructions
 
-> Note: AetherPod is **not** in package repositories yet. Terminal Trove asks that tools exist in repos, but prebuilt binaries + git install satisfy "standalone binaries preferred." AUR packaging is blocked at present — see the "AUR Packaging" section below. If the curator rejects on this point, the fix is packaging (AUR/formula) — tracked as future work.
+> **AetherPod is now on PyPI** — `pip install aetherpod` (verified 2026-08-05). This satisfies Terminal Trove's "must exist in the package repositories" requirement for Python tools. The prebuilt binaries are a bonus for users without Python.
 
-### Linux (x86_64) — prebuilt binary
+### Recommended (all platforms — Python 3.9+)
 ```sh
+pipx install aetherpod      # best for a CLI/TUI: isolated env, on PATH
+# or
+pip install --user aetherpod
+```
+
+### Per-platform fallbacks
+**Linux / macOS / Windows (binary, no Python needed):**
+```sh
+# Linux
 curl -Lo aetherpod https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-linux
 chmod +x aetherpod && ./aetherpod
-```
 
-### macOS (Apple Silicon / Intel)
-```sh
-curl -Lo aetherpod https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-macos-arm64   # or aetherpod-macos-x86_64
-chmod +x aetherpod
-xattr -d com.apple.quarantine aetherpod   # Gatekeeper bypass for unsigned binary
-./aetherpod
-```
+# macOS (arm64 or x86_64)
+curl -Lo aetherpod https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-macos-arm64
+chmod +x aetherpod && xattr -d com.apple.quarantine aetherpod && ./aetherpod
 
-### Windows (x86_64)
-```powershell
+# Windows (PowerShell)
 curl -Lo aetherpod-windows.exe https://github.com/AetherSolDev/AetherPod/releases/latest/download/aetherpod-windows.exe
 .\aetherpod-windows.exe
 ```
 
-### Any platform — from source (Python 3.9+, needs mpv/VLC/ffplay)
-```sh
-git clone https://github.com/AetherSolDev/AetherPod.git
-cd AetherPod
-bash scripts/install.sh        # interactive: system-wide, user-local, or venv
-# or: make install             # system-wide
-# or: make install-user        # ~/.local, no root
-# or: pip install git+https://github.com/AetherSolDev/AetherPod.git
-```
+### What to enter in the Terminal Trove install-builder
+When you select `python` as the primary language, the form **auto-adds** these rows — keep them:
+| Platform | Package manager | Command |
+|----------|-----------------|---------|
+| linux | python (pip) | `pip install aetherpod` |
+| linux | python (pipx) | `pipx install aetherpod` |
+| macos | python (pip) | `pip install aetherpod` |
+| macos | python (pipx) | `pipx install aetherpod` |
+| windows | python (pip) | `pip install aetherpod` |
+| windows | python (pipx) | `pipx install aetherpod` |
+
+> Note: Homebrew/AUR/snap not yet available (AUR blocked by the Arch malware incident; brew tap + snap are future work). PyPI covers all three OSes today, so that's sufficient for the form.
 
 ---
 
