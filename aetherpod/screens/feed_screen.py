@@ -1,5 +1,5 @@
 # Created: 2026-07-19
-# Last Edited: 2026-08-01 11:41 CT (America/Chicago)
+# Last Edited: 2026-08-05 12:31 CT (America/Chicago)
 # Path: aetherpod/screens/feed_screen.py
 # Purpose: Feed subscription list screen — main entry screen for AetherPod.
 
@@ -56,6 +56,10 @@ class FeedScreen(Screen):
         yield Footer()
 
     async def on_mount(self) -> None:
+        # The feed-filter input is display:none until toggled; keep it out of
+        # the focus order so Enter/Down reach the ListView on launch.
+        self.query_one("#feed-filter", Input).can_focus = False
+        self.query_one("#feed-list", ListView).focus()
         self._render_from_cache()
         asyncio.create_task(self._refresh_feeds())
 
@@ -136,6 +140,7 @@ class FeedScreen(Screen):
         filt = self.query_one("#feed-filter", Input)
         if filt.has_class("visible"):
             filt.remove_class("visible")
+            filt.can_focus = False
             self._filter_query = ""
             filt.value = ""
             self.query_one("#feed-list", ListView).focus()
@@ -143,6 +148,7 @@ class FeedScreen(Screen):
             self.notify("Filter cleared", severity="information", timeout=1)
         else:
             filt.add_class("visible")
+            filt.can_focus = True
             filt.focus()
 
     def on_key(self, event: Key) -> None:
@@ -150,6 +156,7 @@ class FeedScreen(Screen):
             filt = self.query_one("#feed-filter", Input)
             if filt.has_class("visible"):
                 filt.remove_class("visible")
+                filt.can_focus = False
                 self._filter_query = ""
                 filt.value = ""
                 self.query_one("#feed-list", ListView).focus()

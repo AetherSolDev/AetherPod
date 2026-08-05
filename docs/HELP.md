@@ -1,5 +1,5 @@
 # Created: 2026-07-20
-# Last Edited: 2026-08-01 12:29 CT (America/Chicago)
+# Last Edited: 2026-08-05 12:35 CT (America/Chicago)
 # Path: docs/HELP.md
 # Purpose: User guide and keybinding reference for AetherPod.
 
@@ -238,4 +238,4 @@ messages appear on stderr; INFO goes to the log file only.
 
 ## Verify
 
-This is AetherPod **v0.4.3**. Run `aetherpod --version` to confirm.
+This is AetherPod **v0.4.4**. Run `aetherpod --version` to confirm.
